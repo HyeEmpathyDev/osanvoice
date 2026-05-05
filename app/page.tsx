@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { DONGS, CATEGORIES, SITE } from "@/lib/constants";
+import { POLICIES } from "@/lib/policies";
 import { getSupabase } from "@/lib/supabase";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { FadeIn } from "@/components/FadeIn";
+import { AnimatedCounter } from "@/components/AnimatedCounter";
+import { ArrowRight, MessageSquarePlus, Sparkles } from "lucide-react";
 
 export const revalidate = 60;
 
@@ -37,186 +43,233 @@ export default async function Home() {
   const { total, dongCounts, catCounts } = await getStats();
 
   return (
-    <main className="min-h-screen bg-white text-[#0f1a2e]">
-      {/* 헤더 */}
-      <header className="border-b border-gray-200 sticky top-0 bg-white/95 backdrop-blur z-10">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-          <Link href="/" className="text-xl font-black text-[#003b8e]">
-            오산의 목소리
-          </Link>
-          <nav className="hidden md:flex gap-6 text-sm font-bold">
-            <Link href="/voices" className="hover:text-[#003b8e]">시민의견</Link>
-            <Link href="/map" className="hover:text-[#003b8e]">고충지도</Link>
-            <Link href="/promises" className="hover:text-[#003b8e]">7대 약속</Link>
-            <Link href="/stats" className="hover:text-[#003b8e]">참여현황</Link>
-            <Link href="/library" className="hover:text-[#003b8e]">자료실</Link>
-            <Link href="/about" className="hover:text-[#003b8e]">소개</Link>
-          </nav>
-        </div>
-      </header>
+    <main className="min-h-screen bg-white text-[#0a0e1a]">
+      <Header variant="dark" />
 
       {/* 히어로 */}
-      <section className="bg-gradient-to-br from-[#003b8e] to-[#1a2654] text-white">
-        <div className="max-w-6xl mx-auto px-6 py-24 md:py-32 text-center">
-          <p className="text-sm font-bold tracking-[0.3em] opacity-80 mb-6">
-            OSAN VOICE · 2026
-          </p>
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-black leading-[1.2] tracking-tight mb-6">
-            오산의 변화와 미래를 위해<br />
-            <span className="text-[#ffd54a]">시민의 목소리</span>를 듣습니다.
-          </h1>
-          <p className="text-lg md:text-xl opacity-90 mb-12">
-            {SITE.subTagline}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/voices/new"
-              className="inline-block bg-[#ffd54a] text-[#003b8e] font-black px-10 py-4 rounded-lg text-lg hover:opacity-90 transition shadow-lg"
-            >
-              의견 남기기
-            </Link>
-            <Link
-              href="/voices"
-              className="inline-block border-2 border-white text-white font-bold px-10 py-4 rounded-lg text-lg hover:bg-white hover:text-[#003b8e] transition"
-            >
-              시민의견 보기
-            </Link>
-          </div>
+      <section className="bg-mesh-hero text-white relative overflow-hidden noise -mt-[73px]">
+        <div className="max-w-6xl mx-auto px-6 pt-40 pb-28 md:pt-48 md:pb-36 text-center relative z-10">
+          <FadeIn>
+            <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest mb-7 backdrop-blur">
+              <Sparkles size={14} className="text-[#ffd54a]" />
+              OSAN VOICE · 2026
+            </div>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-black leading-[1.15] tracking-tight mb-6">
+              오산의 변화와 미래를 위해<br />
+              <span className="text-gradient-gold">시민의 목소리</span>를 듣습니다.
+            </h1>
+          </FadeIn>
+          <FadeIn delay={0.2}>
+            <p className="text-lg md:text-xl opacity-85 mb-12 max-w-xl mx-auto">
+              {SITE.subTagline}
+            </p>
+          </FadeIn>
+          <FadeIn delay={0.3}>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link
+                href="/voices/new"
+                className="group inline-flex items-center justify-center gap-2 bg-[#ffd54a] text-[#0a1633] font-black px-8 py-4 rounded-xl text-base hover:bg-[#fbcf3b] transition shadow-lg shadow-[#ffd54a]/20"
+              >
+                <MessageSquarePlus size={18} />
+                의견 남기기
+                <ArrowRight size={16} className="group-hover:translate-x-0.5 transition" />
+              </Link>
+              <Link
+                href="/voices"
+                className="inline-flex items-center justify-center gap-2 border border-white/30 bg-white/5 text-white font-bold px-8 py-4 rounded-xl text-base hover:bg-white/15 transition backdrop-blur"
+              >
+                시민의견 보기
+              </Link>
+            </div>
+          </FadeIn>
         </div>
-      </section>
 
-      {/* 카운터 */}
-      <section className="border-b border-gray-200 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-6 py-14 grid grid-cols-3 gap-6 text-center">
-          <div>
-            <div className="text-3xl md:text-5xl font-black text-[#003b8e]">{total}</div>
-            <div className="text-xs md:text-sm text-gray-600 mt-2 font-bold">시민 의견</div>
-          </div>
-          <div className="border-x border-gray-200">
-            <div className="text-3xl md:text-5xl font-black text-[#003b8e]">8</div>
-            <div className="text-xs md:text-sm text-gray-600 mt-2 font-bold">행정동</div>
-          </div>
-          <div>
-            <div className="text-3xl md:text-5xl font-black text-[#003b8e]">7</div>
-            <div className="text-xs md:text-sm text-gray-600 mt-2 font-bold">정책 카테고리</div>
+        {/* 카운터 (히어로 하단 글래스 띠) */}
+        <div className="relative z-10 max-w-5xl mx-auto px-6 pb-14">
+          <div className="glass-dark rounded-2xl p-6 md:p-8 grid grid-cols-3 gap-6">
+            <div className="text-center">
+              <div className="text-3xl md:text-5xl font-black text-white tabular tracking-tight">
+                <AnimatedCounter value={total} />
+              </div>
+              <div className="text-xs md:text-sm text-white/70 mt-2 font-bold tracking-wide">
+                시민 의견
+              </div>
+            </div>
+            <div className="text-center border-x border-white/10">
+              <div className="text-3xl md:text-5xl font-black text-white tabular tracking-tight">
+                <AnimatedCounter value={8} />
+              </div>
+              <div className="text-xs md:text-sm text-white/70 mt-2 font-bold tracking-wide">
+                행정동
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-5xl font-black text-white tabular tracking-tight">
+                <AnimatedCounter value={9} />
+              </div>
+              <div className="text-xs md:text-sm text-white/70 mt-2 font-bold tracking-wide">
+                정책 카테고리
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* 8개 행정동 */}
-      <section className="max-w-6xl mx-auto px-6 py-20">
-        <div className="text-center mb-12">
-          <p className="text-sm font-bold tracking-widest text-[#003b8e] mb-3">
-            8 ADMINISTRATIVE DISTRICTS
-          </p>
-          <h2 className="text-2xl md:text-4xl font-black mb-4">
-            오산 8개 행정동, 어디서나 의견을 보내주세요
-          </h2>
-          <p className="text-gray-600">
-            우리 동네 이야기가 정책이 됩니다.
-          </p>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {DONGS.map((d) => (
-            <Link
-              key={d.id}
-              href={`/voices?dong=${d.id}`}
-              className="border-2 border-gray-200 rounded-xl p-6 text-center hover:border-[#003b8e] hover:shadow-lg transition group"
-            >
-              <div className="text-lg md:text-xl font-black text-[#003b8e] group-hover:text-[#1a2654]">
-                {d.name}
-              </div>
-              <div className="text-xs text-gray-500 mt-3 font-bold">
-                의견 {dongCounts.get(d.id) ?? 0}건
-              </div>
-            </Link>
+      <section className="max-w-6xl mx-auto px-6 py-24">
+        <FadeIn>
+          <div className="text-center mb-12">
+            <p className="text-xs font-black tracking-[0.3em] text-[#003b8e] mb-3">
+              8 ADMINISTRATIVE DISTRICTS
+            </p>
+            <h2 className="text-2xl md:text-4xl font-black mb-4 tracking-tight">
+              오산 8개 행정동
+            </h2>
+            <p className="text-gray-600">
+              우리 동네 이야기가 정책이 됩니다.
+            </p>
+          </div>
+        </FadeIn>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {DONGS.map((d, i) => (
+            <FadeIn key={d.id} delay={i * 0.04}>
+              <Link
+                href={`/voices?dong=${d.id}`}
+                className="group block bg-white border border-gray-200 rounded-2xl p-6 text-center lift hover:border-[#003b8e]"
+              >
+                <div className="text-lg md:text-xl font-black text-[#003b8e] mb-2 tracking-tight">
+                  {d.name}
+                </div>
+                <div className="inline-flex items-center gap-1 text-xs text-gray-500 font-bold">
+                  <span className="tabular">{dongCounts.get(d.id) ?? 0}</span>
+                  <span>건</span>
+                </div>
+              </Link>
+            </FadeIn>
           ))}
         </div>
       </section>
 
-      {/* 카테고리 */}
-      <section className="bg-gray-50 border-y border-gray-200">
-        <div className="max-w-6xl mx-auto px-6 py-20">
-          <div className="text-center mb-12">
-            <p className="text-sm font-bold tracking-widest text-[#003b8e] mb-3">
-              7 POLICY CATEGORIES
-            </p>
-            <h2 className="text-2xl md:text-4xl font-black mb-4">
-              7대 정책 카테고리
-            </h2>
-            <p className="text-gray-600">
-              어떤 분야에 의견을 남기시겠어요?
-            </p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-            {CATEGORIES.map((c) => (
-              <Link
-                key={c.key}
-                href={`/voices?cat=${c.key}`}
-                className="bg-white border-2 border-gray-200 rounded-xl p-6 text-center hover:border-[#003b8e] hover:shadow-lg transition"
-              >
-                <div className="text-3xl mb-3">{c.emoji}</div>
-                <div className="text-sm md:text-base font-black text-[#003b8e]">
-                  {c.name}
-                </div>
-                <div className="text-xs text-gray-500 mt-2 font-bold">
-                  {catCounts.get(c.key) ?? 0}건
-                </div>
-              </Link>
+      {/* 9대 카테고리 */}
+      <section className="bg-mesh-light border-y border-gray-100">
+        <div className="max-w-6xl mx-auto px-6 py-24">
+          <FadeIn>
+            <div className="text-center mb-12">
+              <p className="text-xs font-black tracking-[0.3em] text-[#003b8e] mb-3">
+                9 POLICY CATEGORIES
+              </p>
+              <h2 className="text-2xl md:text-4xl font-black mb-4 tracking-tight">
+                9대 정책 카테고리
+              </h2>
+              <p className="text-gray-600">
+                어떤 분야에 의견을 남기시겠어요?
+              </p>
+            </div>
+          </FadeIn>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
+            {CATEGORIES.map((c, i) => (
+              <FadeIn key={c.key} delay={i * 0.03}>
+                <Link
+                  href={`/voices?cat=${c.key}`}
+                  className="group block bg-white border border-gray-200 rounded-2xl p-6 lift hover:border-[#003b8e]"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="text-3xl">{c.emoji}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-base font-black text-[#003b8e] mb-1">
+                        {c.name}
+                      </div>
+                      <div className="text-xs text-gray-500 mb-2 leading-relaxed">
+                        {c.desc}
+                      </div>
+                      <div className="text-xs font-bold text-gray-400 tabular">
+                        {catCounts.get(c.key) ?? 0}건
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </FadeIn>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="max-w-4xl mx-auto px-6 py-20 text-center">
-        <h2 className="text-2xl md:text-3xl font-black mb-6">
-          여러분의 한 마디가, 오산의 미래를 만듭니다.
-        </h2>
-        <p className="text-gray-600 mb-10 leading-relaxed">
-          교통, 교육, 일자리, 환경… 일상에서 느끼는 모든 이야기를 들려주세요.<br />
-          시민의 의견은 7대 약속과 권역별 현안으로 정리됩니다.
-        </p>
-        <Link
-          href="/voices/new"
-          className="inline-block bg-[#003b8e] text-white font-black px-10 py-4 rounded-lg text-lg hover:bg-[#1a2654] transition shadow-lg"
-        >
-          지금 의견 남기기 →
-        </Link>
+      {/* 9대 약속 미리보기 */}
+      <section className="max-w-6xl mx-auto px-6 py-24">
+        <FadeIn>
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
+            <div>
+              <p className="text-xs font-black tracking-[0.3em] text-[#003b8e] mb-3">
+                9 PROMISES
+              </p>
+              <h2 className="text-2xl md:text-4xl font-black tracking-tight mb-3">
+                오산을 위한 9가지 약속
+              </h2>
+              <p className="text-gray-600">
+                5요소(사업목표·우선순위·이행절차·이행기간·재원조달)로 검증 가능한 정책.
+              </p>
+            </div>
+            <Link
+              href="/promises"
+              className="inline-flex items-center gap-2 bg-[#003b8e] text-white font-bold px-5 py-3 rounded-xl text-sm hover:bg-[#0a1633] transition self-start"
+            >
+              전체 보기
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </FadeIn>
+        <div className="grid md:grid-cols-3 gap-4">
+          {POLICIES.slice(0, 6).map((p, i) => (
+            <FadeIn key={p.num} delay={i * 0.05}>
+              <Link
+                href="/promises"
+                className="group block bg-white border border-gray-200 rounded-2xl p-6 lift h-full"
+              >
+                <div className="flex items-baseline gap-3 mb-3">
+                  <span className="text-3xl font-black text-[#003b8e]/20 tabular leading-none">
+                    {String(p.num).padStart(2, "0")}
+                  </span>
+                  <span className="text-xs font-black text-[#ffd54a] bg-[#0a1633] px-2 py-0.5 rounded">
+                    {p.short}
+                  </span>
+                </div>
+                <h3 className="text-base font-black mb-2 tracking-tight leading-snug line-clamp-2">
+                  {p.title}
+                </h3>
+                <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">
+                  {p.summary}
+                </p>
+              </Link>
+            </FadeIn>
+          ))}
+        </div>
       </section>
 
-      {/* 푸터 */}
-      <footer className="bg-[#0f1a2e] text-white">
-        <div className="max-w-6xl mx-auto px-6 py-14">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div>
-              <div className="text-lg font-black mb-3">오산의 목소리</div>
-              <p className="text-sm opacity-80 leading-relaxed">
-                {SITE.tagline}
-              </p>
-            </div>
-            <div>
-              <div className="text-sm font-black mb-3 opacity-90">메뉴</div>
-              <ul className="text-sm opacity-80 space-y-2">
-                <li><Link href="/voices">시민의견</Link></li>
-                <li><Link href="/map">고충지도</Link></li>
-                <li><Link href="/promises">7대 약속</Link></li>
-                <li><Link href="/library">자료실</Link></li>
-              </ul>
-            </div>
-            <div>
-              <div className="text-sm font-black mb-3 opacity-90">안내</div>
-              <p className="text-xs opacity-70 leading-relaxed">
-                본 사이트는 시민 정책 청취 플랫폼입니다.<br />
-                수집된 의견은 익명 처리되며, 정책 검토 자료로만 활용됩니다.
-              </p>
-            </div>
-          </div>
-          <div className="border-t border-white/15 mt-10 pt-6 text-xs opacity-60">
-            © 2026 오산의 목소리 · {SITE.contact}
-          </div>
+      {/* CTA */}
+      <section className="bg-mesh-hero text-white relative overflow-hidden noise">
+        <div className="max-w-4xl mx-auto px-6 py-24 text-center relative z-10">
+          <FadeIn>
+            <h2 className="text-2xl md:text-4xl font-black mb-5 tracking-tight">
+              여러분의 한 마디가,<br />
+              오산의 미래를 만듭니다.
+            </h2>
+            <p className="opacity-80 mb-10 leading-relaxed">
+              교통, 교육, 일자리, 환경… 일상에서 느끼는 모든 이야기를 들려주세요.
+            </p>
+            <Link
+              href="/voices/new"
+              className="inline-flex items-center gap-2 bg-[#ffd54a] text-[#0a1633] font-black px-10 py-4 rounded-xl text-base hover:bg-[#fbcf3b] transition shadow-2xl shadow-[#ffd54a]/30"
+            >
+              지금 의견 남기기
+              <ArrowRight size={18} />
+            </Link>
+          </FadeIn>
         </div>
-      </footer>
+      </section>
+
+      <Footer />
     </main>
   );
 }
