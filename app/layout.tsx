@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { SocialSidebar } from "@/components/SocialSidebar";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://osanvoice.xn--oo5bn6ap0x.kr"),
@@ -38,6 +39,7 @@ export default function RootLayout({
         style={{ fontFamily: "'Pretendard', -apple-system, sans-serif" }}
       >
         {children}
+        <SocialSidebar />
       </body>
     </html>
   );

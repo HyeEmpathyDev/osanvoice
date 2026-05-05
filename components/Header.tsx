@@ -4,9 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { CAMP_LINKS } from "@/lib/constants";
-import { Menu, X, MessageSquarePlus, ExternalLink, Mic } from "lucide-react";
-import { FacebookIcon, InstagramIcon, YoutubeIcon, TikTokIcon } from "./BrandIcons";
+import { Menu, X, MessageSquarePlus, Mic } from "lucide-react";
 
 const NAV = [
   { href: "/voices", label: "시민의견" },
@@ -14,7 +12,7 @@ const NAV = [
   { href: "/stats", label: "참여현황" },
 ];
 
-export function Header({ variant = "light" }: { variant?: "light" | "dark" }) {
+export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -26,17 +24,15 @@ export function Header({ variant = "light" }: { variant?: "light" | "dark" }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const isDark = variant === "dark" && !scrolled;
+  // 항상 흰 배경 + 짙은 텍스트 (정명근 스타일)
+  const isDark = false;
+  void isDark; // (legacy 호환)
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 transition-all duration-300",
-        scrolled
-          ? "glass border-b border-white/40 bg-white/85"
-          : isDark
-            ? "bg-transparent"
-            : "bg-white border-b border-gray-100"
+        "sticky top-0 z-50 transition-all duration-300 bg-white",
+        scrolled ? "shadow-sm" : "border-b border-gray-100"
       )}
     >
       {/* 상단 얇은 그라데이션 바 */}
@@ -99,96 +95,6 @@ export function Header({ variant = "light" }: { variant?: "light" | "dark" }) {
             );
           })}
 
-          {/* SNS 아이콘 */}
-          <div
-            className={cn(
-              "ml-2 pl-3 flex items-center gap-1 border-l",
-              isDark ? "border-white/20" : "border-gray-200"
-            )}
-          >
-            {CAMP_LINKS.campaign && (
-              <a
-                href={CAMP_LINKS.campaign}
-                target="_blank"
-                rel="noopener"
-                aria-label="조용호 캠프 공식"
-                className={cn(
-                  "p-2 rounded-lg transition flex items-center gap-1 text-xs font-bold",
-                  isDark
-                    ? "text-white/85 hover:text-white hover:bg-white/10"
-                    : "text-[#003b8e] hover:bg-[#003b8e]/10"
-                )}
-              >
-                <ExternalLink size={14} />
-                캠프
-              </a>
-            )}
-            {CAMP_LINKS.facebook && (
-              <a
-                href={CAMP_LINKS.facebook}
-                target="_blank"
-                rel="noopener"
-                aria-label="Facebook"
-                className={cn(
-                  "p-2 rounded-lg transition",
-                  isDark
-                    ? "text-white/85 hover:text-white hover:bg-white/10"
-                    : "text-gray-600 hover:text-[#1877f2] hover:bg-gray-100"
-                )}
-              >
-                <FacebookIcon size={16} />
-              </a>
-            )}
-            {CAMP_LINKS.instagram && (
-              <a
-                href={CAMP_LINKS.instagram}
-                target="_blank"
-                rel="noopener"
-                aria-label="Instagram"
-                className={cn(
-                  "p-2 rounded-lg transition",
-                  isDark
-                    ? "text-white/85 hover:text-white hover:bg-white/10"
-                    : "text-gray-600 hover:text-[#e4405f] hover:bg-gray-100"
-                )}
-              >
-                <InstagramIcon size={16} />
-              </a>
-            )}
-            {CAMP_LINKS.youtube && (
-              <a
-                href={CAMP_LINKS.youtube}
-                target="_blank"
-                rel="noopener"
-                aria-label="YouTube"
-                className={cn(
-                  "p-2 rounded-lg transition",
-                  isDark
-                    ? "text-white/85 hover:text-white hover:bg-white/10"
-                    : "text-gray-600 hover:text-[#ff0000] hover:bg-gray-100"
-                )}
-              >
-                <YoutubeIcon size={16} />
-              </a>
-            )}
-            {CAMP_LINKS.tiktok && (
-              <a
-                href={CAMP_LINKS.tiktok}
-                target="_blank"
-                rel="noopener"
-                aria-label="TikTok"
-                className={cn(
-                  "p-2 rounded-lg transition",
-                  isDark
-                    ? "text-white/85 hover:text-white hover:bg-white/10"
-                    : "text-gray-600 hover:text-black hover:bg-gray-100"
-                )}
-              >
-                <TikTokIcon size={16} />
-              </a>
-            )}
-          </div>
-
           {/* CTA */}
           <Link
             href="/voices/new"
@@ -231,44 +137,6 @@ export function Header({ variant = "light" }: { variant?: "light" | "dark" }) {
                 {item.label}
               </Link>
             ))}
-
-            <div className="border-t border-gray-100 mt-2 pt-3">
-              <div className="text-[10px] font-bold text-gray-400 mb-2 tracking-widest">
-                CAMP
-              </div>
-              <div className="flex items-center gap-2 flex-wrap">
-                {CAMP_LINKS.campaign && (
-                  <a
-                    href={CAMP_LINKS.campaign}
-                    target="_blank"
-                    rel="noopener"
-                    className="text-xs font-bold px-3 py-2 bg-[#003b8e]/10 text-[#003b8e] rounded-lg flex items-center gap-1.5"
-                  >
-                    <ExternalLink size={14} /> 캠프 공식
-                  </a>
-                )}
-                {CAMP_LINKS.facebook && (
-                  <a href={CAMP_LINKS.facebook} target="_blank" rel="noopener" className="p-2 rounded-lg bg-gray-100">
-                    <FacebookIcon size={16} className="text-[#1877f2]" />
-                  </a>
-                )}
-                {CAMP_LINKS.instagram && (
-                  <a href={CAMP_LINKS.instagram} target="_blank" rel="noopener" className="p-2 rounded-lg bg-gray-100">
-                    <InstagramIcon size={16} className="text-[#e4405f]" />
-                  </a>
-                )}
-                {CAMP_LINKS.youtube && (
-                  <a href={CAMP_LINKS.youtube} target="_blank" rel="noopener" className="p-2 rounded-lg bg-gray-100">
-                    <YoutubeIcon size={16} className="text-[#ff0000]" />
-                  </a>
-                )}
-                {CAMP_LINKS.tiktok && (
-                  <a href={CAMP_LINKS.tiktok} target="_blank" rel="noopener" className="p-2 rounded-lg bg-gray-100 text-black">
-                    <TikTokIcon size={16} />
-                  </a>
-                )}
-              </div>
-            </div>
 
             <Link
               href="/voices/new"

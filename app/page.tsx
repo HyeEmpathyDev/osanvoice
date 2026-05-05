@@ -44,7 +44,7 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-white text-[#0a0e1a]">
-      <Header variant="dark" />
+      <Header />
 
       {/* 헤더 하단 진행 바 */}
       <ProgressBar count={total} goal={Math.max(100, Math.ceil(total / 100) * 100)} />

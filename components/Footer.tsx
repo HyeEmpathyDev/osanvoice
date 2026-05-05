@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, ExternalLink } from "lucide-react";
+import { Mail } from "lucide-react";
 import { FacebookIcon, InstagramIcon, YoutubeIcon, TikTokIcon } from "./BrandIcons";
 import { SITE, CAMP_LINKS } from "@/lib/constants";
 
@@ -35,16 +35,6 @@ export function Footer() {
                 CAMP
               </div>
               <div className="flex items-center gap-2 flex-wrap">
-                {CAMP_LINKS.campaign && (
-                  <a
-                    href={CAMP_LINKS.campaign}
-                    target="_blank"
-                    rel="noopener"
-                    className="text-xs font-bold px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg flex items-center gap-1.5 transition"
-                  >
-                    <ExternalLink size={12} /> 캠프 공식
-                  </a>
-                )}
                 {CAMP_LINKS.facebook && (
                   <a
                     href={CAMP_LINKS.facebook}
