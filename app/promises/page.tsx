@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { FadeIn } from "@/components/FadeIn";
 import { POLICIES } from "@/lib/policies";
-import { CATEGORIES } from "@/lib/constants";
 import { ArrowRight, Calendar, Coins, Sparkles } from "lucide-react";
 
 export const metadata = {
@@ -11,10 +11,6 @@ export const metadata = {
 };
 
 export default function PromisesPage() {
-  const catMap = Object.fromEntries(
-    CATEGORIES.map((c) => [c.key, c])
-  );
-
   return (
     <main className="min-h-screen bg-mesh-light text-[#0a0e1a]">
       <Header />
@@ -46,9 +42,7 @@ export default function PromisesPage() {
       {/* 정책 카드 그리드 */}
       <section className="max-w-6xl mx-auto px-6 py-20">
         <div className="grid md:grid-cols-2 gap-5">
-          {POLICIES.map((p, i) => {
-            const cat = catMap[p.category];
-            return (
+          {POLICIES.map((p, i) => (
               <FadeIn key={p.num} delay={i * 0.04}>
                 <article className="group relative bg-white border border-gray-200 rounded-2xl p-7 lift overflow-hidden h-full flex flex-col">
                   {/* 번호 워터마크 */}
@@ -61,11 +55,6 @@ export default function PromisesPage() {
                       <span className="bg-[#003b8e] text-white text-xs font-black px-3 py-1.5 rounded-full">
                         정책 {p.num}
                       </span>
-                      {cat && (
-                        <span className="bg-[#ffd54a]/20 text-[#0a0e1a] text-xs font-bold px-3 py-1.5 rounded-full">
-                          {cat.emoji} {cat.name}
-                        </span>
-                      )}
                     </div>
 
                     <h2 className="text-xl md:text-2xl font-black mb-3 leading-tight tracking-tight">
@@ -118,8 +107,7 @@ export default function PromisesPage() {
                   </div>
                 </article>
               </FadeIn>
-            );
-          })}
+            ))}
         </div>
       </section>
 
@@ -142,11 +130,7 @@ export default function PromisesPage() {
         </FadeIn>
       </section>
 
-      <footer className="bg-[#0a0e1a] text-white">
-        <div className="max-w-6xl mx-auto px-6 py-10 text-center text-xs opacity-60">
-          © 2026 오산의 목소리 · 시민 정책 청취 플랫폼
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }
