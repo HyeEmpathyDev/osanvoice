@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { DONGS, CATEGORIES, SITE } from "@/lib/constants";
-import { POLICIES } from "@/lib/policies";
 import { getSupabase } from "@/lib/supabase";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -110,7 +109,7 @@ export default async function Home() {
                 <AnimatedCounter value={9} />
               </div>
               <div className="text-xs md:text-sm text-white/70 mt-2 font-bold tracking-wide">
-                정책 카테고리
+                의견 분야
               </div>
             </div>
           </div>
@@ -158,10 +157,10 @@ export default async function Home() {
           <FadeIn>
             <div className="text-center mb-12">
               <p className="text-xs font-black tracking-[0.3em] text-[#003b8e] mb-3">
-                9 POLICY CATEGORIES
+                9 TOPICS
               </p>
               <h2 className="text-2xl md:text-4xl font-black mb-4 tracking-tight">
-                9대 정책 카테고리
+                9개 의견 분야
               </h2>
               <p className="text-gray-600">
                 어떤 분야에 의견을 남기시겠어요?
@@ -193,57 +192,6 @@ export default async function Home() {
               </FadeIn>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* 9대 약속 미리보기 */}
-      <section className="max-w-6xl mx-auto px-6 py-24">
-        <FadeIn>
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
-            <div>
-              <p className="text-xs font-black tracking-[0.3em] text-[#003b8e] mb-3">
-                9 PROMISES
-              </p>
-              <h2 className="text-2xl md:text-4xl font-black tracking-tight mb-3">
-                오산을 위한 9가지 약속
-              </h2>
-              <p className="text-gray-600">
-                5요소(사업목표·우선순위·이행절차·이행기간·재원조달)로 검증 가능한 정책.
-              </p>
-            </div>
-            <Link
-              href="/promises"
-              className="inline-flex items-center gap-2 bg-[#003b8e] text-white font-bold px-5 py-3 rounded-xl text-sm hover:bg-[#0a1633] transition self-start"
-            >
-              전체 보기
-              <ArrowRight size={16} />
-            </Link>
-          </div>
-        </FadeIn>
-        <div className="grid md:grid-cols-3 gap-4">
-          {POLICIES.slice(0, 6).map((p, i) => (
-            <FadeIn key={p.num} delay={i * 0.05}>
-              <Link
-                href="/promises"
-                className="group block bg-white border border-gray-200 rounded-2xl p-6 lift h-full"
-              >
-                <div className="flex items-baseline gap-3 mb-3">
-                  <span className="text-3xl font-black text-[#003b8e]/20 tabular leading-none">
-                    {String(p.num).padStart(2, "0")}
-                  </span>
-                  <span className="text-xs font-black text-[#ffd54a] bg-[#0a1633] px-2 py-0.5 rounded">
-                    {p.short}
-                  </span>
-                </div>
-                <h3 className="text-base font-black mb-2 tracking-tight leading-snug line-clamp-2">
-                  {p.title}
-                </h3>
-                <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">
-                  {p.summary}
-                </p>
-              </Link>
-            </FadeIn>
-          ))}
         </div>
       </section>
 

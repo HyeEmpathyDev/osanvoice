@@ -24,9 +24,6 @@ export function Footer() {
                 <Link href="/map" className="hover:opacity-100">고충지도</Link>
               </li>
               <li>
-                <Link href="/promises" className="hover:opacity-100">9대 약속</Link>
-              </li>
-              <li>
                 <Link href="/stats" className="hover:opacity-100">참여현황</Link>
               </li>
             </ul>

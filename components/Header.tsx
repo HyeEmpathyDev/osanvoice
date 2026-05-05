@@ -9,7 +9,6 @@ import { Menu, X } from "lucide-react";
 const NAV = [
   { href: "/voices", label: "시민의견" },
   { href: "/map", label: "고충지도" },
-  { href: "/promises", label: "9대 약속" },
   { href: "/stats", label: "참여현황" },
 ];
 
