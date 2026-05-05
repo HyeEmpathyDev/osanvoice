@@ -11,7 +11,6 @@ const NAV = [
   { href: "/map", label: "고충지도" },
   { href: "/promises", label: "9대 약속" },
   { href: "/stats", label: "참여현황" },
-  { href: "/about", label: "소개" },
 ];
 
 export function Header({ variant = "light" }: { variant?: "light" | "dark" }) {

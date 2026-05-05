@@ -29,9 +29,6 @@ export function Footer() {
               <li>
                 <Link href="/stats" className="hover:opacity-100">참여현황</Link>
               </li>
-              <li>
-                <Link href="/about" className="hover:opacity-100">소개</Link>
-              </li>
             </ul>
           </div>
 
