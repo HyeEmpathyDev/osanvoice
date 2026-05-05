@@ -1,7 +1,41 @@
 import Link from "next/link";
 import { DONGS, CATEGORIES, SITE } from "@/lib/constants";
+import { getSupabase } from "@/lib/supabase";
 
-export default function Home() {
+export const revalidate = 60;
+
+async function getStats() {
+  try {
+    const supabase = getSupabase();
+    const [totalRes, dongsRes, catsRes] = await Promise.all([
+      supabase.from("voices").select("*", { count: "exact", head: true }).eq("is_visible", true),
+      supabase.from("voices").select("dong").eq("is_visible", true),
+      supabase.from("voices").select("category").eq("is_visible", true),
+    ]);
+
+    const total = totalRes.count ?? 0;
+    const dongCounts = new Map<string, number>();
+    (dongsRes.data ?? []).forEach((r: { dong: string }) =>
+      dongCounts.set(r.dong, (dongCounts.get(r.dong) ?? 0) + 1)
+    );
+    const catCounts = new Map<string, number>();
+    (catsRes.data ?? []).forEach((r: { category: string }) =>
+      catCounts.set(r.category, (catCounts.get(r.category) ?? 0) + 1)
+    );
+
+    return { total, dongCounts, catCounts };
+  } catch {
+    return {
+      total: 0,
+      dongCounts: new Map<string, number>(),
+      catCounts: new Map<string, number>(),
+    };
+  }
+}
+
+export default async function Home() {
+  const { total, dongCounts, catCounts } = await getStats();
+
   return (
     <main className="min-h-screen bg-white text-[#0f1a2e]">
       {/* 헤더 */}
@@ -55,7 +89,7 @@ export default function Home() {
       <section className="border-b border-gray-200 bg-gray-50">
         <div className="max-w-6xl mx-auto px-6 py-14 grid grid-cols-3 gap-6 text-center">
           <div>
-            <div className="text-3xl md:text-5xl font-black text-[#003b8e]">0</div>
+            <div className="text-3xl md:text-5xl font-black text-[#003b8e]">{total}</div>
             <div className="text-xs md:text-sm text-gray-600 mt-2 font-bold">시민 의견</div>
           </div>
           <div className="border-x border-gray-200">
@@ -92,7 +126,9 @@ export default function Home() {
               <div className="text-lg md:text-xl font-black text-[#003b8e] group-hover:text-[#1a2654]">
                 {d.name}
               </div>
-              <div className="text-xs text-gray-500 mt-3 font-bold">의견 0건</div>
+              <div className="text-xs text-gray-500 mt-3 font-bold">
+                의견 {dongCounts.get(d.id) ?? 0}건
+              </div>
             </Link>
           ))}
         </div>
@@ -123,7 +159,9 @@ export default function Home() {
                 <div className="text-sm md:text-base font-black text-[#003b8e]">
                   {c.name}
                 </div>
-                <div className="text-xs text-gray-500 mt-2 font-bold">0건</div>
+                <div className="text-xs text-gray-500 mt-2 font-bold">
+                  {catCounts.get(c.key) ?? 0}건
+                </div>
               </Link>
             ))}
           </div>
