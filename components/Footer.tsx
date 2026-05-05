@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Mail } from "lucide-react";
-import { SITE } from "@/lib/constants";
+import { Mail, ExternalLink } from "lucide-react";
+import { FacebookIcon, InstagramIcon, YoutubeIcon, TikTokIcon } from "./BrandIcons";
+import { SITE, CAMP_LINKS } from "@/lib/constants";
 
 export function Footer() {
   return (
@@ -27,6 +28,69 @@ export function Footer() {
                 <Link href="/stats" className="hover:opacity-100">참여현황</Link>
               </li>
             </ul>
+
+            {/* 캠프 SNS */}
+            <div className="mt-6">
+              <div className="text-[11px] font-black opacity-70 tracking-widest mb-2">
+                CAMP
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                {CAMP_LINKS.campaign && (
+                  <a
+                    href={CAMP_LINKS.campaign}
+                    target="_blank"
+                    rel="noopener"
+                    className="text-xs font-bold px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg flex items-center gap-1.5 transition"
+                  >
+                    <ExternalLink size={12} /> 캠프 공식
+                  </a>
+                )}
+                {CAMP_LINKS.facebook && (
+                  <a
+                    href={CAMP_LINKS.facebook}
+                    target="_blank"
+                    rel="noopener"
+                    aria-label="Facebook"
+                    className="p-2 rounded-lg bg-white/10 hover:bg-[#1877f2] transition"
+                  >
+                    <FacebookIcon size={14} />
+                  </a>
+                )}
+                {CAMP_LINKS.instagram && (
+                  <a
+                    href={CAMP_LINKS.instagram}
+                    target="_blank"
+                    rel="noopener"
+                    aria-label="Instagram"
+                    className="p-2 rounded-lg bg-white/10 hover:bg-[#e4405f] transition"
+                  >
+                    <InstagramIcon size={14} />
+                  </a>
+                )}
+                {CAMP_LINKS.youtube && (
+                  <a
+                    href={CAMP_LINKS.youtube}
+                    target="_blank"
+                    rel="noopener"
+                    aria-label="YouTube"
+                    className="p-2 rounded-lg bg-white/10 hover:bg-[#ff0000] transition"
+                  >
+                    <YoutubeIcon size={14} />
+                  </a>
+                )}
+                {CAMP_LINKS.tiktok && (
+                  <a
+                    href={CAMP_LINKS.tiktok}
+                    target="_blank"
+                    rel="noopener"
+                    aria-label="TikTok"
+                    className="p-2 rounded-lg bg-white/10 hover:bg-black transition"
+                  >
+                    <TikTokIcon size={14} />
+                  </a>
+                )}
+              </div>
+            </div>
           </div>
 
           <div>

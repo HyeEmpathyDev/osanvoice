@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { FadeIn } from "@/components/FadeIn";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
+import { ProgressBar } from "@/components/ProgressBar";
 import { ArrowRight, MessageSquarePlus, Sparkles } from "lucide-react";
 
 export const revalidate = 60;
@@ -45,8 +46,11 @@ export default async function Home() {
     <main className="min-h-screen bg-white text-[#0a0e1a]">
       <Header variant="dark" />
 
+      {/* 헤더 하단 진행 바 */}
+      <ProgressBar count={total} goal={Math.max(100, Math.ceil(total / 100) * 100)} />
+
       {/* 히어로 */}
-      <section className="bg-mesh-hero text-white relative overflow-hidden noise -mt-[73px]">
+      <section className="bg-mesh-hero text-white relative overflow-hidden noise">
         <div className="max-w-6xl mx-auto px-6 pt-40 pb-28 md:pt-48 md:pb-36 text-center relative z-10">
           <FadeIn>
             <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest mb-7 backdrop-blur">

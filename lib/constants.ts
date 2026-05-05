@@ -51,3 +51,13 @@ export const SITE = {
   contactEmail: "its.warm.rion@gmail.com",
   contactLabel: "오산의 목소리 운영팀",
 } as const;
+
+// 캠프 SNS 바로가기 (캠프 공식 채널)
+// 빈 값("")이면 헤더에서 자동 숨김 처리됨. 운영 중 채워서 활성화.
+export const CAMP_LINKS = {
+  campaign: "https://www.xn--oo5bn6ap0x.kr",
+  facebook: "",
+  instagram: "",
+  youtube: "https://www.youtube.com/@joyho645",
+  tiktok: "https://www.tiktok.com/@joyho645",
+} as const;
