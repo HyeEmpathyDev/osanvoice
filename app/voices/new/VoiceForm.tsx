@@ -1,33 +1,84 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { DONGS, CATEGORIES, AGE_GROUPS } from "@/lib/constants";
 import { submitVoice } from "../actions";
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (
+        element: HTMLElement,
+        options: { sitekey: string; callback?: (token: string) => void; theme?: string }
+      ) => string;
+      reset: (widgetId?: string) => void;
+    };
+    onloadTurnstileCallback?: () => void;
+  }
+}
 
 export default function VoiceForm() {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [content, setContent] = useState("");
+  const [formStart] = useState(() => Date.now());
+  const turnstileRef = useRef<HTMLDivElement>(null);
+
+  // Turnstile 위젯 렌더 (사이트 키 설정 시만)
+  useEffect(() => {
+    if (!TURNSTILE_SITE_KEY || !turnstileRef.current) return;
+    const script = document.createElement("script");
+    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      if (window.turnstile && turnstileRef.current) {
+        window.turnstile.render(turnstileRef.current, {
+          sitekey: TURNSTILE_SITE_KEY,
+          theme: "light",
+        });
+      }
+    };
+    document.head.appendChild(script);
+    return () => {
+      script.remove();
+    };
+  }, []);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     const formData = new FormData(e.currentTarget);
+    formData.append("__formStart", String(formStart));
     startTransition(async () => {
       const result = await submitVoice(formData);
       if (result.ok) {
         router.push(`/voices?submitted=1`);
       } else {
         setError(result.error);
+        // Turnstile 토큰은 1회용이라 reset
+        window.turnstile?.reset();
       }
     });
   }
 
   return (
     <form onSubmit={onSubmit} className="space-y-6">
+      {/* Honeypot — 봇 방어 (사람에겐 안 보임) */}
+      <input
+        type="text"
+        name="website"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="absolute -left-[9999px] opacity-0 pointer-events-none"
+      />
+
       {/* 행정동 */}
       <div>
         <label className="block text-sm font-bold text-[#0f1a2e] mb-2">
@@ -140,6 +191,11 @@ export default function VoiceForm() {
         <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4 text-sm text-red-700">
           {error}
         </div>
+      )}
+
+      {/* Turnstile 위젯 (키 설정 시만 표시됨) */}
+      {TURNSTILE_SITE_KEY && (
+        <div ref={turnstileRef} className="flex justify-center" />
       )}
 
       {/* 안내 */}

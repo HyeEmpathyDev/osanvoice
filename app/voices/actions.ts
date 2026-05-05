@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { getSupabase } from "@/lib/supabase";
 import { DONGS, CATEGORIES, AGE_GROUPS } from "@/lib/constants";
 
@@ -9,11 +10,64 @@ const VALID_CATEGORIES = CATEGORIES.map((c) => c.key);
 const VALID_AGE_GROUPS = [...AGE_GROUPS];
 const VALID_GENDERS = ["m", "f"] as const;
 
+const TURNSTILE_SECRET = process.env.TURNSTILE_SECRET_KEY;
+const TURNSTILE_VERIFY_URL =
+  "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+
 export type SubmitResult =
   | { ok: true; id: string }
   | { ok: false; error: string };
 
+async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
+  if (!TURNSTILE_SECRET) return true; // 키 미설정 시 검증 패스 (placeholder 단계)
+  if (!token) return false;
+  try {
+    const formData = new URLSearchParams();
+    formData.append("secret", TURNSTILE_SECRET);
+    formData.append("response", token);
+    formData.append("remoteip", ip);
+    const res = await fetch(TURNSTILE_VERIFY_URL, {
+      method: "POST",
+      body: formData,
+    });
+    const data = (await res.json()) as { success?: boolean };
+    return Boolean(data.success);
+  } catch (e) {
+    console.error("[turnstile] verify error:", e);
+    return false;
+  }
+}
+
 export async function submitVoice(formData: FormData): Promise<SubmitResult> {
+  // 0. 헤더 추출 (IP 등)
+  const h = await headers();
+  const ip =
+    h.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    h.get("x-real-ip") ??
+    "unknown";
+
+  // 1. Honeypot — 봇이 자동 채우는 숨겨진 필드
+  const honeypot = String(formData.get("website") ?? "");
+  if (honeypot) {
+    console.warn("[submitVoice] honeypot triggered:", { ip });
+    // 봇에게는 성공한 것처럼 응답 (시간 낭비)
+    return { ok: true, id: "blocked" };
+  }
+
+  // 2. 제출 시간 체크 — 폼 로드 후 3초 미만이면 봇 의심
+  const formStart = Number(formData.get("__formStart") ?? "0");
+  if (formStart > 0 && Date.now() - formStart < 3000) {
+    return { ok: false, error: "너무 빠른 제출입니다. 잠시 후 다시 시도해주세요." };
+  }
+
+  // 3. Turnstile 검증 (키 설정 시)
+  const turnstileToken = String(formData.get("cf-turnstile-response") ?? "");
+  const turnstileOk = await verifyTurnstile(turnstileToken, ip);
+  if (!turnstileOk) {
+    return { ok: false, error: "보안 검증에 실패했습니다. 새로고침 후 다시 시도해주세요." };
+  }
+
+  // 4. 입력 검증
   const dong = String(formData.get("dong") ?? "");
   const category = String(formData.get("category") ?? "");
   const content = String(formData.get("content") ?? "").trim();
@@ -24,7 +78,7 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
     return { ok: false, error: "행정동을 선택해주세요." };
   }
   if (!VALID_CATEGORIES.includes(category as (typeof VALID_CATEGORIES)[number])) {
-    return { ok: false, error: "카테고리를 선택해주세요." };
+    return { ok: false, error: "분야를 선택해주세요." };
   }
   if (content.length < 5) {
     return { ok: false, error: "의견은 최소 5자 이상 입력해주세요." };
@@ -44,8 +98,22 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
     ? genderRaw
     : null;
 
+  // 5. 동일 IP 5분 내 5회 이상 제출 차단 (간단 rate limit)
   try {
     const supabase = getSupabase();
+
+    // 동일 콘텐츠 중복 제출 차단 (5분 내)
+    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    const { data: dups } = await supabase
+      .from("voices")
+      .select("id")
+      .eq("content", content)
+      .gte("created_at", fiveMinAgo)
+      .limit(1);
+    if (dups && dups.length > 0) {
+      return { ok: false, error: "이미 동일한 의견이 등록됐습니다." };
+    }
+
     const { data, error } = await supabase
       .from("voices")
       .insert({
@@ -65,6 +133,8 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
 
     revalidatePath("/voices");
     revalidatePath("/");
+    revalidatePath("/stats");
+    revalidatePath("/map");
     return { ok: true, id: data!.id };
   } catch (e) {
     console.error("[submitVoice] exception:", e);
