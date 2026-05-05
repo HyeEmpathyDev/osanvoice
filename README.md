@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 오산의 목소리 (Osan Voice)
 
-## Getting Started
+> 오산의 변화와 미래를 위해 시민의 목소리를 듣습니다.
 
-First, run the development server:
+오산시 시민이 정책 의견·고충을 직접 보내는 시민 참여 플랫폼.
+
+## 기술 스택
+
+- **Next.js 15** (App Router) + TypeScript + Tailwind CSS v4
+- **Pretendard** (한글 폰트)
+- **Supabase** (시민 의견 DB · Phase 2)
+- **네이버 지도 API** (권역별 고충지도 · Phase 3)
+- **Vercel** (호스팅)
+
+## 도메인
+
+- 운영: `osanvoice.조용호.kr` (펀치코드: `osanvoice.xn--oo5bn6ap0x.kr`)
+- DNS: 가비아(Gabia) — `조용호.kr` 본도메인의 서브도메인 CNAME
+
+## 로컬 실행
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Phase 일정
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Phase | 범위 | 기간 |
+|---|---|---|
+| **1** | Next.js 셋업 + 메인페이지 + 8개 동 카드 + Vercel 배포 | 5/5 |
+| **2** | Supabase 연동 + 시민의견 폼 + 카테고리별 보기 | 5/6 |
+| **3** | 네이버 지도 + 권역별 핀 + 통계 페이지 | 5/8~10 |
+| **4** | 7대 약속·자료실·일정·소개 + 시드 데이터 | 5/13~14 |
+| **🚀 5/15** | **공식 오픈** (후보자 등록 동시) | |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 8개 행정동
 
-## Learn More
+중앙동 · 대원1동 · 대원2동 · 신장1동 · 신장2동 · 세마동 · 남촌동 · 초평동
 
-To learn more about Next.js, take a look at the following resources:
+## 7대 정책 카테고리
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+🚍 교통 · 📚 교육·돌봄 · 💼 산업·일자리 · 🚓 안전 · 🌳 환경 · 🎨 문화·체육 · 🏛️ 행정
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 안내
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+본 사이트는 시민 정책 청취 플랫폼이며, 수집된 의견은 익명 처리됩니다.
