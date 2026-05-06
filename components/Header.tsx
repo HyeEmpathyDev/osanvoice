@@ -49,7 +49,7 @@ export function Header() {
             width={1315}
             height={419}
             priority
-            className="h-14 md:h-16 w-auto object-contain"
+            className="h-20 md:h-24 w-auto object-contain"
           />
           <div className="hidden xl:block leading-tight border-l border-gray-200 pl-3">
             <div className="text-[10px] font-bold tracking-widest opacity-80 text-gray-500">
