@@ -2,13 +2,16 @@ import Link from "next/link";
 import { getSupabase } from "@/lib/supabase";
 import { DONGS, CATEGORIES } from "@/lib/constants";
 import type { Voice } from "@/lib/types";
+import { LikeButton } from "@/components/LikeButton";
+import { VoicesSearch } from "@/components/VoicesSearch";
+import { Flame, Clock } from "lucide-react";
 
 export const metadata = {
   title: "시민의견 — 오산의 목소리",
   description: "오산 시민이 보낸 정책 의견을 한곳에서 보세요.",
 };
 
-export const revalidate = 60; // 1분마다 ISR
+export const revalidate = 60;
 
 function formatRelative(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
@@ -27,7 +30,23 @@ interface SearchParams {
     dong?: string;
     cat?: string;
     submitted?: string;
+    q?: string;
+    sort?: string;
   }>;
+}
+
+function buildHref(
+  base: { dong?: string; cat?: string; q?: string; sort?: string },
+  override: Partial<{ dong?: string; cat?: string; q?: string; sort?: string }>
+) {
+  const merged = { ...base, ...override };
+  const params = new URLSearchParams();
+  if (merged.dong) params.set("dong", merged.dong);
+  if (merged.cat) params.set("cat", merged.cat);
+  if (merged.q) params.set("q", merged.q);
+  if (merged.sort) params.set("sort", merged.sort);
+  const qs = params.toString();
+  return qs ? `/voices?${qs}` : "/voices";
 }
 
 export default async function VoicesPage({ searchParams }: SearchParams) {
@@ -35,6 +54,8 @@ export default async function VoicesPage({ searchParams }: SearchParams) {
   const dongFilter = sp.dong;
   const catFilter = sp.cat;
   const justSubmitted = sp.submitted === "1";
+  const keyword = (sp.q ?? "").trim();
+  const sort = sp.sort === "popular" ? "popular" : "latest";
 
   let voices: Voice[] = [];
   let totalCount = 0;
@@ -46,11 +67,19 @@ export default async function VoicesPage({ searchParams }: SearchParams) {
       .from("voices")
       .select("*", { count: "exact" })
       .eq("is_visible", true)
-      .order("created_at", { ascending: false })
       .limit(50);
+
+    if (sort === "popular") {
+      query = query
+        .order("like_count", { ascending: false })
+        .order("created_at", { ascending: false });
+    } else {
+      query = query.order("created_at", { ascending: false });
+    }
 
     if (dongFilter) query = query.eq("dong", dongFilter);
     if (catFilter) query = query.eq("category", catFilter);
+    if (keyword) query = query.ilike("content", `%${keyword}%`);
 
     const { data, count, error } = await query;
     if (error) throw error;
@@ -66,9 +95,10 @@ export default async function VoicesPage({ searchParams }: SearchParams) {
     CATEGORIES.map((c) => [c.key, { name: c.name, emoji: c.emoji }])
   );
 
+  const baseParams = { dong: dongFilter, cat: catFilter, q: keyword, sort };
+
   return (
     <main className="min-h-screen bg-white text-[#0f1a2e]">
-      {/* 헤더 */}
       <header className="border-b border-gray-200 bg-white sticky top-0 z-10 backdrop-blur bg-white/95">
         <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
           <Link href="/" className="text-xl font-black text-[#003b8e]">
@@ -101,7 +131,40 @@ export default async function VoicesPage({ searchParams }: SearchParams) {
           </p>
         </div>
 
-        {/* 필터 */}
+        {/* 검색 + 정렬 */}
+        <div className="flex flex-col md:flex-row gap-3 mb-8">
+          <VoicesSearch
+            initial={keyword}
+            dong={dongFilter}
+            cat={catFilter}
+            sort={sort}
+          />
+          <div className="flex gap-2 shrink-0">
+            <Link
+              href={buildHref(baseParams, { sort: "latest" })}
+              className={`inline-flex items-center gap-1.5 text-sm font-bold px-4 py-2 rounded-lg border-2 transition ${
+                sort === "latest"
+                  ? "bg-[#003b8e] text-white border-[#003b8e]"
+                  : "border-gray-200 text-gray-700 hover:border-[#003b8e]"
+              }`}
+            >
+              <Clock size={14} />
+              최신순
+            </Link>
+            <Link
+              href={buildHref(baseParams, { sort: "popular" })}
+              className={`inline-flex items-center gap-1.5 text-sm font-bold px-4 py-2 rounded-lg border-2 transition ${
+                sort === "popular"
+                  ? "bg-[#003b8e] text-white border-[#003b8e]"
+                  : "border-gray-200 text-gray-700 hover:border-[#003b8e]"
+              }`}
+            >
+              <Flame size={14} />
+              인기순
+            </Link>
+          </div>
+        </div>
+
         <div className="space-y-4 mb-8">
           <div>
             <div className="text-xs font-bold text-gray-500 mb-2 tracking-widest">
@@ -109,7 +172,7 @@ export default async function VoicesPage({ searchParams }: SearchParams) {
             </div>
             <div className="flex flex-wrap gap-2">
               <Link
-                href="/voices"
+                href={buildHref(baseParams, { dong: undefined })}
                 className={`text-sm font-bold px-4 py-2 rounded-full border-2 transition ${
                   !dongFilter
                     ? "bg-[#003b8e] text-white border-[#003b8e]"
@@ -121,7 +184,7 @@ export default async function VoicesPage({ searchParams }: SearchParams) {
               {DONGS.map((d) => (
                 <Link
                   key={d.id}
-                  href={`/voices?dong=${d.id}${catFilter ? `&cat=${catFilter}` : ""}`}
+                  href={buildHref(baseParams, { dong: d.id })}
                   className={`text-sm font-bold px-4 py-2 rounded-full border-2 transition ${
                     dongFilter === d.id
                       ? "bg-[#003b8e] text-white border-[#003b8e]"
@@ -140,7 +203,7 @@ export default async function VoicesPage({ searchParams }: SearchParams) {
             </div>
             <div className="flex flex-wrap gap-2">
               <Link
-                href={dongFilter ? `/voices?dong=${dongFilter}` : "/voices"}
+                href={buildHref(baseParams, { cat: undefined })}
                 className={`text-sm font-bold px-4 py-2 rounded-full border-2 transition ${
                   !catFilter
                     ? "bg-[#003b8e] text-white border-[#003b8e]"
@@ -152,7 +215,7 @@ export default async function VoicesPage({ searchParams }: SearchParams) {
               {CATEGORIES.map((c) => (
                 <Link
                   key={c.key}
-                  href={`/voices?cat=${c.key}${dongFilter ? `&dong=${dongFilter}` : ""}`}
+                  href={buildHref(baseParams, { cat: c.key })}
                   className={`text-sm font-bold px-4 py-2 rounded-full border-2 transition ${
                     catFilter === c.key
                       ? "bg-[#003b8e] text-white border-[#003b8e]"
@@ -166,14 +229,17 @@ export default async function VoicesPage({ searchParams }: SearchParams) {
           </div>
         </div>
 
-        {/* 목록 */}
         {fetchError ? (
           <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6 text-red-700 text-center">
             {fetchError}
           </div>
         ) : voices.length === 0 ? (
           <div className="border-2 border-dashed border-gray-200 rounded-lg p-16 text-center text-gray-500">
-            <p className="font-bold mb-2">아직 등록된 의견이 없습니다.</p>
+            <p className="font-bold mb-2">
+              {keyword
+                ? `"${keyword}" 검색 결과가 없습니다.`
+                : "아직 등록된 의견이 없습니다."}
+            </p>
             <p className="text-sm">첫 의견을 남겨주세요.</p>
             <Link
               href="/voices/new"
@@ -212,9 +278,15 @@ export default async function VoicesPage({ searchParams }: SearchParams) {
                       {formatRelative(v.created_at)}
                     </span>
                   </div>
-                  <p className="text-sm md:text-base leading-relaxed text-gray-800 whitespace-pre-wrap">
+                  <p className="text-sm md:text-base leading-relaxed text-gray-800 whitespace-pre-wrap mb-3">
                     {v.content}
                   </p>
+                  <div className="flex justify-end">
+                    <LikeButton
+                      voiceId={v.id}
+                      initialCount={v.like_count ?? 0}
+                    />
+                  </div>
                 </li>
               );
             })}

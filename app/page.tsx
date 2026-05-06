@@ -6,17 +6,29 @@ import { Footer } from "@/components/Footer";
 import { FadeIn } from "@/components/FadeIn";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { ProgressBar } from "@/components/ProgressBar";
-import { ArrowRight, MessageSquarePlus, Sparkles } from "lucide-react";
+import { DDay } from "@/components/DDay";
+import { LikeButton } from "@/components/LikeButton";
+import { ArrowRight, MessageSquarePlus, Sparkles, Flame } from "lucide-react";
+import type { Voice } from "@/lib/types";
 
 export const revalidate = 60;
 
 async function getStats() {
   try {
     const supabase = getSupabase();
-    const [totalRes, dongsRes, catsRes] = await Promise.all([
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const [totalRes, dongsRes, catsRes, bestRes] = await Promise.all([
       supabase.from("voices").select("*", { count: "exact", head: true }).eq("is_visible", true),
       supabase.from("voices").select("dong").eq("is_visible", true),
       supabase.from("voices").select("category").eq("is_visible", true),
+      supabase
+        .from("voices")
+        .select("*")
+        .eq("is_visible", true)
+        .gte("created_at", sevenDaysAgo)
+        .order("like_count", { ascending: false })
+        .order("created_at", { ascending: false })
+        .limit(5),
     ]);
 
     const total = totalRes.count ?? 0;
@@ -28,19 +40,27 @@ async function getStats() {
     (catsRes.data ?? []).forEach((r: { category: string }) =>
       catCounts.set(r.category, (catCounts.get(r.category) ?? 0) + 1)
     );
+    const best = ((bestRes.data ?? []) as Voice[]).filter(
+      (v) => (v.like_count ?? 0) > 0
+    );
 
-    return { total, dongCounts, catCounts };
+    return { total, dongCounts, catCounts, best };
   } catch {
     return {
       total: 0,
       dongCounts: new Map<string, number>(),
       catCounts: new Map<string, number>(),
+      best: [] as Voice[],
     };
   }
 }
 
 export default async function Home() {
-  const { total, dongCounts, catCounts } = await getStats();
+  const { total, dongCounts, catCounts, best } = await getStats();
+  const dongMap = Object.fromEntries(DONGS.map((d) => [d.id, d.name]));
+  const catMap = Object.fromEntries(
+    CATEGORIES.map((c) => [c.key, { name: c.name, emoji: c.emoji }])
+  );
 
   return (
     <main className="min-h-screen bg-white text-[#0a0e1a]">
@@ -53,9 +73,12 @@ export default async function Home() {
       <section className="bg-mesh-hero text-white relative overflow-hidden noise">
         <div className="max-w-6xl mx-auto px-6 pt-40 pb-28 md:pt-48 md:pb-36 text-center relative z-10">
           <FadeIn>
-            <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest mb-7 backdrop-blur">
-              <Sparkles size={14} className="text-[#ffd54a]" />
-              OSAN VOICE · 2026
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-7">
+              <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest backdrop-blur">
+                <Sparkles size={14} className="text-[#ffd54a]" />
+                OSAN VOICE · 2026
+              </div>
+              <DDay />
             </div>
           </FadeIn>
           <FadeIn delay={0.1}>
@@ -154,6 +177,70 @@ export default async function Home() {
           ))}
         </div>
       </section>
+
+      {/* 이번 주 베스트 의견 */}
+      {best.length > 0 && (
+        <section className="bg-gradient-to-b from-white to-gray-50 border-t border-gray-100">
+          <div className="max-w-5xl mx-auto px-6 py-20">
+            <FadeIn>
+              <div className="text-center mb-10">
+                <p className="text-xs font-black tracking-[0.3em] text-[#e4405f] mb-3 inline-flex items-center gap-2 justify-center">
+                  <Flame size={14} className="text-[#e4405f]" />
+                  THIS WEEK&apos;S BEST
+                </p>
+                <h2 className="text-2xl md:text-4xl font-black mb-4 tracking-tight">
+                  이번 주 인기 의견
+                </h2>
+                <p className="text-gray-600">
+                  많은 시민이 공감한 의견 TOP {best.length}
+                </p>
+              </div>
+            </FadeIn>
+            <ul className="space-y-3">
+              {best.map((v, i) => {
+                const cat = catMap[v.category];
+                return (
+                  <FadeIn key={v.id} delay={i * 0.04}>
+                    <li className="bg-white border border-gray-200 rounded-2xl p-5 hover:border-[#003b8e] transition flex gap-4">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-[#e4405f] to-[#bc1888] text-white flex items-center justify-center font-black text-sm">
+                        {i + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-2 text-xs font-bold">
+                          <span className="bg-[#003b8e] text-white px-2.5 py-0.5 rounded-full">
+                            {dongMap[v.dong] ?? v.dong}
+                          </span>
+                          <span className="bg-[#ffd54a] text-[#0f1a2e] px-2.5 py-0.5 rounded-full">
+                            {cat?.emoji} {cat?.name ?? v.category}
+                          </span>
+                        </div>
+                        <p className="text-sm md:text-base leading-relaxed text-gray-800 line-clamp-3 mb-3">
+                          {v.content}
+                        </p>
+                        <div className="flex justify-end">
+                          <LikeButton
+                            voiceId={v.id}
+                            initialCount={v.like_count ?? 0}
+                          />
+                        </div>
+                      </div>
+                    </li>
+                  </FadeIn>
+                );
+              })}
+            </ul>
+            <div className="text-center mt-8">
+              <Link
+                href="/voices?sort=popular"
+                className="inline-flex items-center gap-2 text-sm font-bold text-[#003b8e] hover:underline"
+              >
+                인기 의견 더 보기
+                <ArrowRight size={15} />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* 9대 카테고리 */}
       <section className="bg-mesh-light border-y border-gray-100">

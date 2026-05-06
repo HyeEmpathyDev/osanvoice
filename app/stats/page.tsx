@@ -3,9 +3,12 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { FadeIn } from "@/components/FadeIn";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
+import { TimeSeriesChart } from "@/components/TimeSeriesChart";
+import { WordCloud } from "@/components/WordCloud";
 import { DONGS, CATEGORIES } from "@/lib/constants";
 import { getSupabase } from "@/lib/supabase";
-import { BarChart3 } from "lucide-react";
+import { extractKeywords, buildDailySeries } from "@/lib/keywords";
+import { BarChart3, TrendingUp, Hash } from "lucide-react";
 
 export const revalidate = 60;
 export const metadata = {
@@ -16,31 +19,50 @@ export const metadata = {
 async function getStats() {
   try {
     const supabase = getSupabase();
-    const [totalRes, dongsRes, catsRes] = await Promise.all([
+    const [totalRes, listRes] = await Promise.all([
       supabase
         .from("voices")
         .select("*", { count: "exact", head: true })
         .eq("is_visible", true),
-      supabase.from("voices").select("dong").eq("is_visible", true),
-      supabase.from("voices").select("category").eq("is_visible", true),
+      supabase
+        .from("voices")
+        .select("dong, category, content, created_at")
+        .eq("is_visible", true)
+        .order("created_at", { ascending: false })
+        .limit(2000),
     ]);
 
     const total = totalRes.count ?? 0;
-    const dongCounts = new Map<string, number>();
-    (dongsRes.data ?? []).forEach((r: { dong: string }) =>
-      dongCounts.set(r.dong, (dongCounts.get(r.dong) ?? 0) + 1)
-    );
-    const catCounts = new Map<string, number>();
-    (catsRes.data ?? []).forEach((r: { category: string }) =>
-      catCounts.set(r.category, (catCounts.get(r.category) ?? 0) + 1)
-    );
+    const rows =
+      (listRes.data as Array<{
+        dong: string;
+        category: string;
+        content: string;
+        created_at: string;
+      }>) ?? [];
 
-    return { total, dongCounts, catCounts };
+    const dongCounts = new Map<string, number>();
+    const catCounts = new Map<string, number>();
+    const contents: string[] = [];
+    const createdAts: string[] = [];
+    rows.forEach((r) => {
+      dongCounts.set(r.dong, (dongCounts.get(r.dong) ?? 0) + 1);
+      catCounts.set(r.category, (catCounts.get(r.category) ?? 0) + 1);
+      contents.push(r.content);
+      createdAts.push(r.created_at);
+    });
+
+    const series = buildDailySeries(createdAts, 14);
+    const keywords = extractKeywords(contents, 30);
+
+    return { total, dongCounts, catCounts, series, keywords };
   } catch {
     return {
       total: 0,
       dongCounts: new Map<string, number>(),
       catCounts: new Map<string, number>(),
+      series: buildDailySeries([], 14),
+      keywords: [],
     };
   }
 }
@@ -66,9 +88,10 @@ function Bar({ label, count, max }: { label: string; count: number; max: number 
 }
 
 export default async function StatsPage() {
-  const { total, dongCounts, catCounts } = await getStats();
+  const { total, dongCounts, catCounts, series, keywords } = await getStats();
   const maxDong = Math.max(...Array.from(dongCounts.values()), 1);
   const maxCat = Math.max(...Array.from(catCounts.values()), 1);
+  const last14Total = series.reduce((s, d) => s + d.value, 0);
 
   return (
     <main className="min-h-screen bg-mesh-light text-[#0a0e1a]">
@@ -98,6 +121,40 @@ export default async function StatsPage() {
             <div className="text-sm md:text-base text-gray-600 font-bold mt-3">
               누적 시민 의견
             </div>
+          </div>
+        </FadeIn>
+
+        {/* 시계열 차트 */}
+        <FadeIn>
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 md:p-8 mb-6">
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h2 className="text-base font-black tracking-tight inline-flex items-center gap-2">
+                  <TrendingUp size={16} className="text-[#003b8e]" />
+                  최근 14일 추이
+                </h2>
+                <p className="text-xs text-gray-500 mt-1">
+                  지난 2주간 등록된 의견은 {last14Total}건입니다.
+                </p>
+              </div>
+            </div>
+            <TimeSeriesChart data={series} />
+          </div>
+        </FadeIn>
+
+        {/* 워드클라우드 */}
+        <FadeIn delay={0.05}>
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 md:p-8 mb-6">
+            <div className="mb-3">
+              <h2 className="text-base font-black tracking-tight inline-flex items-center gap-2">
+                <Hash size={16} className="text-[#003b8e]" />
+                자주 등장한 키워드
+              </h2>
+              <p className="text-xs text-gray-500 mt-1">
+                의견 본문에서 추출한 상위 키워드 (2회 이상 언급)
+              </p>
+            </div>
+            <WordCloud words={keywords} />
           </div>
         </FadeIn>
 

@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { Menu, X, MessageSquarePlus, Mic } from "lucide-react";
+import { Menu, X, MessageSquarePlus } from "lucide-react";
 
 const NAV = [
   { href: "/voices", label: "시민의견" },
@@ -38,34 +39,22 @@ export function Header() {
       {/* 상단 얇은 그라데이션 바 */}
       <div className="h-[3px] bg-gradient-to-r from-[#003b8e] via-[#2a5cb0] to-[#ffd54a]" />
 
-      <div className="max-w-6xl mx-auto px-6 py-3 flex justify-between items-center gap-4">
-        {/* 로고 — 다단 구성 */}
-        <Link href="/" className="flex items-center gap-3 flex-shrink-0">
-          <span
-            className={cn(
-              "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
-              isDark
-                ? "bg-white/10 backdrop-blur"
-                : "bg-gradient-to-br from-[#003b8e] to-[#1a2654]"
-            )}
-          >
-            <Mic size={18} className={isDark ? "text-[#ffd54a]" : "text-[#ffd54a]"} />
-          </span>
-          <div className="leading-tight">
-            <div
-              className={cn(
-                "text-[10px] font-bold tracking-widest opacity-80",
-                isDark ? "text-white" : "text-gray-500"
-              )}
-            >
+      <div className="max-w-6xl mx-auto px-6 py-2.5 flex justify-between items-center gap-4">
+        {/* 후보 배너 + 사이트 명 */}
+        <Link href="/" className="flex items-center gap-3 flex-shrink-0 min-w-0">
+          <Image
+            src="/joyongho-banner.png"
+            alt="기호 1번 조용호 — 진정한 변화! 당당한 오산!"
+            width={830}
+            height={300}
+            priority
+            className="h-12 md:h-14 w-auto object-contain"
+          />
+          <div className="hidden md:block leading-tight border-l border-gray-200 pl-3">
+            <div className="text-[10px] font-bold tracking-widest opacity-80 text-gray-500">
               시민이 만드는 당당한 오산
             </div>
-            <div
-              className={cn(
-                "text-base md:text-lg font-black tracking-tight",
-                isDark ? "text-white" : "text-[#003b8e]"
-              )}
-            >
+            <div className="text-base md:text-lg font-black tracking-tight text-[#003b8e]">
               오산의 목소리
             </div>
           </div>

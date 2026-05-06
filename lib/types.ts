@@ -14,6 +14,7 @@ export interface Voice {
   age_group: AgeGroup | null;
   gender: Gender | null;
   is_visible: boolean;
+  like_count: number;
 }
 
 export interface VoiceInput {
