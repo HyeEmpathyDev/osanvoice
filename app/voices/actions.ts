@@ -167,3 +167,25 @@ export async function likeVoice(voiceId: string): Promise<LikeResult> {
     return { ok: false, error: "서버 연결 오류입니다." };
   }
 }
+
+export async function unlikeVoice(voiceId: string): Promise<LikeResult> {
+  if (!voiceId || typeof voiceId !== "string") {
+    return { ok: false, error: "잘못된 요청입니다." };
+  }
+  try {
+    const supabase = getSupabase();
+    const { data, error } = await supabase.rpc("decrement_voice_like", {
+      p_voice_id: voiceId,
+    });
+    if (error) {
+      console.error("[unlikeVoice] rpc error:", error);
+      return { ok: false, error: "처리 중 오류가 발생했습니다." };
+    }
+    revalidatePath("/voices");
+    revalidatePath("/");
+    return { ok: true, count: Number(data) };
+  } catch (e) {
+    console.error("[unlikeVoice] exception:", e);
+    return { ok: false, error: "서버 연결 오류입니다." };
+  }
+}

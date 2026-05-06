@@ -32,3 +32,28 @@ $$;
 
 revoke execute on function public.increment_voice_like(uuid) from public;
 grant execute on function public.increment_voice_like(uuid) to anon, authenticated;
+
+create or replace function public.decrement_voice_like(p_voice_id uuid)
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  new_count integer;
+begin
+  update public.voices
+     set like_count = greatest(0, like_count - 1)
+   where id = p_voice_id and is_visible = true
+   returning like_count into new_count;
+
+  if new_count is null then
+     raise exception 'voice not found or hidden';
+  end if;
+
+  return new_count;
+end;
+$$;
+
+revoke execute on function public.decrement_voice_like(uuid) from public;
+grant execute on function public.decrement_voice_like(uuid) to anon, authenticated;
