@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { AdminPanel } from "./AdminPanel";
+import { LogoutButton } from "./LogoutButton";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -47,7 +48,7 @@ export default async function AdminPage({ searchParams }: Search) {
               총 <b>{voices.length}건</b> · {showHidden ? "전체" : "공개"} 의견 표시
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <a
               href="/admin"
               className={`text-sm font-bold px-4 py-2 rounded-lg border-2 transition ${
@@ -68,6 +69,7 @@ export default async function AdminPage({ searchParams }: Search) {
             >
               전체
             </a>
+            <LogoutButton />
           </div>
         </div>
 
