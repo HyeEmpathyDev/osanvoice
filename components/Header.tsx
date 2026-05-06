@@ -45,9 +45,9 @@ export function Header() {
         <Link href="/" className="flex items-center gap-3 flex-shrink-0 min-w-0">
           <Image
             src="/joyongho-banner.png"
-            alt="기호 1번 조용호 — 진정한 변화! 당당한 오산!"
-            width={662}
-            height={224}
+            alt="기호 1번 조용호 — 따뜻한 동행! 당당한 오산!"
+            width={1315}
+            height={419}
             priority
             className="h-14 md:h-16 w-auto object-contain"
           />
