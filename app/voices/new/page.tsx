@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import VoiceForm from "./VoiceForm";
 
 export const metadata = {
@@ -9,22 +10,8 @@ export const metadata = {
 export default function NewVoicePage() {
   return (
     <main className="min-h-screen bg-white text-[#0f1a2e]">
-      {/* 헤더 */}
-      <header className="border-b border-gray-200 bg-white">
-        <div className="max-w-3xl mx-auto px-6 py-4 flex justify-between items-center">
-          <Link href="/" className="text-xl font-black text-[#003b8e]">
-            오산의 목소리
-          </Link>
-          <Link
-            href="/voices"
-            className="text-sm font-bold text-gray-600 hover:text-[#003b8e]"
-          >
-            ← 시민의견 보기
-          </Link>
-        </div>
-      </header>
+      <Header />
 
-      {/* 본문 */}
       <section className="max-w-3xl mx-auto px-6 py-10">
         <div className="mb-10">
           <p className="text-sm font-bold tracking-widest text-[#003b8e] mb-3">
@@ -40,6 +27,8 @@ export default function NewVoicePage() {
 
         <VoiceForm />
       </section>
+
+      <Footer />
     </main>
   );
 }

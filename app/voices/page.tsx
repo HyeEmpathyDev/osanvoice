@@ -2,6 +2,8 @@ import Link from "next/link";
 import { getSupabase } from "@/lib/supabase";
 import { DONGS, CATEGORIES } from "@/lib/constants";
 import type { Voice } from "@/lib/types";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { LikeButton } from "@/components/LikeButton";
 import { VoicesSearch } from "@/components/VoicesSearch";
 import { Flame, Clock } from "lucide-react";
@@ -99,19 +101,7 @@ export default async function VoicesPage({ searchParams }: SearchParams) {
 
   return (
     <main className="min-h-screen bg-white text-[#0f1a2e]">
-      <header className="border-b border-gray-200 bg-white sticky top-0 z-10 backdrop-blur bg-white/95">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
-          <Link href="/" className="text-xl font-black text-[#003b8e]">
-            오산의 목소리
-          </Link>
-          <Link
-            href="/voices/new"
-            className="bg-[#003b8e] text-white font-bold px-5 py-2 rounded-lg text-sm hover:bg-[#1a2654] transition"
-          >
-            의견 남기기
-          </Link>
-        </div>
-      </header>
+      <Header />
 
       <section className="max-w-5xl mx-auto px-6 py-10">
         {justSubmitted && (
@@ -293,6 +283,8 @@ export default async function VoicesPage({ searchParams }: SearchParams) {
           </ul>
         )}
       </section>
+
+      <Footer />
     </main>
   );
 }
