@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Menu, X, MessageSquarePlus } from "lucide-react";
+import { DDay } from "./DDay";
 
 const NAV = [
   { href: "/voices", label: "시민의견" },
@@ -50,7 +51,7 @@ export function Header() {
             priority
             className="h-14 md:h-16 w-auto object-contain"
           />
-          <div className="hidden md:block leading-tight border-l border-gray-200 pl-3">
+          <div className="hidden xl:block leading-tight border-l border-gray-200 pl-3">
             <div className="text-[10px] font-bold tracking-widest opacity-80 text-gray-500">
               시민이 만드는 당당한 오산
             </div>
@@ -59,6 +60,11 @@ export function Header() {
             </div>
           </div>
         </Link>
+
+        {/* 가운데 D-Day 라이브 카운트다운 */}
+        <div className="hidden md:flex flex-1 justify-center px-2">
+          <DDay />
+        </div>
 
         {/* 데스크톱 네비 */}
         <nav className="hidden lg:flex items-center gap-1">

@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { SocialSidebar } from "@/components/SocialSidebar";
-import { DDay } from "@/components/DDay";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://osanvoice.xn--oo5bn6ap0x.kr"),
@@ -55,7 +54,6 @@ export default function RootLayout({
         className="min-h-full flex flex-col"
         style={{ fontFamily: "'Pretendard', -apple-system, sans-serif" }}
       >
-        <DDay />
         {children}
         <SocialSidebar />
       </body>
