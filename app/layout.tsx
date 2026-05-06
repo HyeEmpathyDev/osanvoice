@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { SocialSidebar } from "@/components/SocialSidebar";
-import { CandidateBanner } from "@/components/CandidateBanner";
 import { DDay } from "@/components/DDay";
 
 export const metadata: Metadata = {
@@ -57,7 +56,6 @@ export default function RootLayout({
         style={{ fontFamily: "'Pretendard', -apple-system, sans-serif" }}
       >
         <DDay />
-        <CandidateBanner />
         {children}
         <SocialSidebar />
       </body>
