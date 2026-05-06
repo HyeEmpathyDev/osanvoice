@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { getSupabase } from "@/lib/supabase";
 import { DONGS, CATEGORIES, AGE_GROUPS } from "@/lib/constants";
+import { isUuid } from "@/lib/validation";
 
 const VALID_DONGS = DONGS.map((d) => d.id);
 const VALID_CATEGORIES = CATEGORIES.map((c) => c.key);
@@ -114,6 +115,7 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
       return { ok: false, error: "이미 동일한 의견이 등록됐습니다." };
     }
 
+    // 사전 모더레이션: 신규 의견은 비공개 상태로 들어가고 운영진 검토 후 공개
     const { data, error } = await supabase
       .from("voices")
       .insert({
@@ -122,6 +124,7 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
         content,
         age_group: ageGroup,
         gender,
+        is_visible: false,
       })
       .select("id")
       .single();
@@ -147,7 +150,7 @@ export type LikeResult =
   | { ok: false; error: string };
 
 export async function likeVoice(voiceId: string): Promise<LikeResult> {
-  if (!voiceId || typeof voiceId !== "string") {
+  if (!isUuid(voiceId)) {
     return { ok: false, error: "잘못된 요청입니다." };
   }
   try {
@@ -169,7 +172,7 @@ export async function likeVoice(voiceId: string): Promise<LikeResult> {
 }
 
 export async function unlikeVoice(voiceId: string): Promise<LikeResult> {
-  if (!voiceId || typeof voiceId !== "string") {
+  if (!isUuid(voiceId)) {
     return { ok: false, error: "잘못된 요청입니다." };
   }
   try {

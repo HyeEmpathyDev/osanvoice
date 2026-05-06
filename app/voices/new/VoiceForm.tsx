@@ -200,8 +200,9 @@ export default function VoiceForm() {
 
       {/* 안내 */}
       <div className="text-xs text-gray-500 leading-relaxed bg-gray-50 rounded-lg p-4">
-        제출하신 의견은 익명으로 처리되며, 정책 검토 자료로만 활용됩니다.
-        부적절한 내용은 운영진 검토 후 비공개 처리될 수 있습니다.
+        <b className="text-[#003b8e]">운영진 검토 후 공개됩니다.</b> 제출하신 의견은
+        익명으로 처리되며, 정책 검토 자료로만 활용됩니다. 부적절한 내용은
+        비공개로 유지될 수 있습니다.
       </div>
 
       {/* 제출 */}

@@ -64,19 +64,19 @@ export function DDay() {
 
   return (
     <div className="flex flex-col items-center justify-center leading-tight select-none">
-      <div className="text-[9px] md:text-[10px] font-bold tracking-[0.2em] text-gray-500 inline-flex items-center gap-1">
-        <Calendar size={10} className="text-[#003b8e]" />
-        제9회 전국동시지방선거 · 2026.06.03 (KST)
+      <div className="text-xs md:text-sm font-bold tracking-[0.18em] text-gray-500 inline-flex items-center gap-1.5">
+        <Calendar size={13} className="text-[#003b8e]" />
+        제9회 전국동시지방선거 · 2026.06.03
       </div>
       {c === null ? (
-        <div className="text-base md:text-xl font-black text-[#003b8e] tabular tracking-tight">
+        <div className="text-2xl md:text-3xl font-black text-[#003b8e] tabular tracking-tight">
           D-—
         </div>
       ) : (
-        <div className="text-base md:text-xl font-black text-[#003b8e] tabular tracking-tight inline-flex items-baseline gap-1.5">
+        <div className="text-2xl md:text-3xl font-black text-[#003b8e] tabular tracking-tight inline-flex items-baseline gap-2">
           <span>{c.isPast ? `D+${c.days}` : `D-${c.days}`}</span>
           <span
-            className="text-[11px] md:text-sm text-gray-600 tabular font-bold"
+            className="text-base md:text-lg text-gray-700 tabular font-black"
             aria-label={`${c.hours}시간 ${c.minutes}분 ${c.seconds}초`}
           >
             {pad(c.hours)}:{pad(c.minutes)}:{pad(c.seconds)}

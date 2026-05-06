@@ -1,11 +1,16 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
+import { isUuid } from "@/lib/validation";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const adminToken = process.env.ADMIN_SECRET_TOKEN;
+const COOKIE_NAME = "admin_session";
+const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7일
 
 function adminClient() {
   if (!url || !serviceKey) {
@@ -18,20 +23,48 @@ function adminClient() {
   });
 }
 
-function checkToken(token: string): boolean {
+async function isAuthed(): Promise<boolean> {
   if (!adminToken) return false;
-  return token === adminToken;
+  const c = await cookies();
+  const v = c.get(COOKIE_NAME)?.value;
+  return Boolean(v) && v === adminToken;
+}
+
+function revalidateAll() {
+  revalidatePath("/admin");
+  revalidatePath("/voices");
+  revalidatePath("/");
+  revalidatePath("/stats");
+  revalidatePath("/map");
+}
+
+export async function signIn(formData: FormData) {
+  const submitted = String(formData.get("token") ?? "");
+  if (!adminToken || submitted !== adminToken) {
+    redirect("/admin/login?error=invalid");
+  }
+  const c = await cookies();
+  c.set(COOKIE_NAME, adminToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
+    maxAge: SESSION_MAX_AGE,
+  });
+  redirect("/admin");
+}
+
+export async function signOut() {
+  const c = await cookies();
+  c.delete(COOKIE_NAME);
+  redirect("/admin/login");
 }
 
 export async function toggleVisibility(formData: FormData) {
-  const token = String(formData.get("token") ?? "");
+  if (!(await isAuthed())) return { ok: false, error: "권한이 없습니다." };
   const id = String(formData.get("id") ?? "");
   const next = formData.get("next") === "true";
-
-  if (!checkToken(token)) {
-    return { ok: false, error: "권한이 없습니다." };
-  }
-  if (!id) return { ok: false, error: "id가 없습니다." };
+  if (!isUuid(id)) return { ok: false, error: "잘못된 id입니다." };
 
   try {
     const supabase = adminClient();
@@ -43,9 +76,7 @@ export async function toggleVisibility(formData: FormData) {
       console.error("[toggleVisibility]", error);
       return { ok: false, error: "처리 중 오류가 발생했습니다." };
     }
-    revalidatePath("/admin");
-    revalidatePath("/voices");
-    revalidatePath("/");
+    revalidateAll();
     return { ok: true };
   } catch (e) {
     console.error("[toggleVisibility] exception:", e);
@@ -54,13 +85,9 @@ export async function toggleVisibility(formData: FormData) {
 }
 
 export async function deleteVoice(formData: FormData) {
-  const token = String(formData.get("token") ?? "");
+  if (!(await isAuthed())) return { ok: false, error: "권한이 없습니다." };
   const id = String(formData.get("id") ?? "");
-
-  if (!checkToken(token)) {
-    return { ok: false, error: "권한이 없습니다." };
-  }
-  if (!id) return { ok: false, error: "id가 없습니다." };
+  if (!isUuid(id)) return { ok: false, error: "잘못된 id입니다." };
 
   try {
     const supabase = adminClient();
@@ -69,9 +96,7 @@ export async function deleteVoice(formData: FormData) {
       console.error("[deleteVoice]", error);
       return { ok: false, error: "삭제 중 오류" };
     }
-    revalidatePath("/admin");
-    revalidatePath("/voices");
-    revalidatePath("/");
+    revalidateAll();
     return { ok: true };
   } catch (e) {
     console.error("[deleteVoice] exception:", e);

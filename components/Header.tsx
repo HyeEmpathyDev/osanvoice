@@ -51,11 +51,11 @@ export function Header() {
             priority
             className="h-20 md:h-24 w-auto object-contain"
           />
-          <div className="hidden xl:block leading-tight border-l border-gray-200 pl-3">
-            <div className="text-[10px] font-bold tracking-widest opacity-80 text-gray-500">
+          <div className="hidden xl:block leading-tight border-l border-gray-200 pl-4">
+            <div className="text-sm font-bold tracking-widest opacity-80 text-gray-500">
               시민이 만드는 당당한 오산
             </div>
-            <div className="text-base font-black tracking-tight text-[#003b8e]">
+            <div className="text-2xl font-black tracking-tight text-[#003b8e]">
               오산의 목소리
             </div>
           </div>

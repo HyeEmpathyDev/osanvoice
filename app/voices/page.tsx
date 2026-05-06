@@ -106,7 +106,7 @@ export default async function VoicesPage({ searchParams }: SearchParams) {
       <section className="max-w-5xl mx-auto px-6 py-10">
         {justSubmitted && (
           <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4 mb-6 text-sm text-green-800 font-bold">
-            ✓ 의견이 등록되었습니다. 감사합니다.
+            ✓ 의견이 접수되었습니다. 운영진 검토 후 공개됩니다. 감사합니다.
           </div>
         )}
 
