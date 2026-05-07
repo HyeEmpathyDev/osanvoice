@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
-import { getSupabase, getAdminSupabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 import { DONGS, CATEGORIES, AGE_GROUPS } from "@/lib/constants";
 import { isUuid } from "@/lib/validation";
 import { notifyNewVoice } from "@/lib/notify";
@@ -100,11 +100,9 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
     ? genderRaw
     : null;
 
-  // 5. 동일 IP 5분 내 5회 이상 제출 차단 (간단 rate limit)
+  // 5. 인서트
   try {
-    // service role 클라이언트 — 시민 의견은 즉시 공개 정책이므로 RLS 우회.
-    // 검증(turnstile·honeypot·길이·중복)은 위에서 이미 끝났다.
-    const supabase = getAdminSupabase();
+    const supabase = getSupabase();
 
     // 동일 콘텐츠 중복 제출 차단 (5분 내)
     const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
@@ -118,7 +116,8 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
       return { ok: false, error: "이미 동일한 의견이 등록됐습니다." };
     }
 
-    // 신규 의견은 즉시 공개. 부적절 콘텐츠는 관리자 페이지에서 사후 숨김 처리.
+    // 신규 의견은 일단 비공개로 들어간다 (RLS 정책 호환).
+    // 텔레그램 알림 받은 운영자가 /admin에서 즉시 공개 토글하면 노출.
     const { data, error } = await supabase
       .from("voices")
       .insert({
@@ -127,18 +126,14 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
         content,
         age_group: ageGroup,
         gender,
-        is_visible: true,
+        is_visible: false,
       })
       .select("id")
       .single();
 
     if (error) {
       console.error("[submitVoice] insert error:", error);
-      // [DEBUG] 임시: 실제 Supabase 오류를 사용자에게 노출
-      return {
-        ok: false,
-        error: `[DEBUG insert] ${error.code ?? ""} ${error.message ?? ""} | ${error.details ?? ""}`,
-      };
+      return { ok: false, error: "저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요." };
     }
 
     // 텔레그램 알림 (실패해도 응답을 막지 않음)
@@ -158,9 +153,7 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
     return { ok: true, id: data!.id };
   } catch (e) {
     console.error("[submitVoice] exception:", e);
-    // [DEBUG] 임시: 실제 예외 메시지를 사용자에게 노출
-    const msg = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
-    return { ok: false, error: `[DEBUG catch] ${msg}` };
+    return { ok: false, error: "서버 연결 오류입니다." };
   }
 }
 
