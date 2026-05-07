@@ -134,7 +134,11 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
 
     if (error) {
       console.error("[submitVoice] insert error:", error);
-      return { ok: false, error: "저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요." };
+      // [DEBUG] 임시: 실제 Supabase 오류를 사용자에게 노출
+      return {
+        ok: false,
+        error: `[DEBUG insert] ${error.code ?? ""} ${error.message ?? ""} | ${error.details ?? ""}`,
+      };
     }
 
     // 텔레그램 알림 (실패해도 응답을 막지 않음)
@@ -154,7 +158,9 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
     return { ok: true, id: data!.id };
   } catch (e) {
     console.error("[submitVoice] exception:", e);
-    return { ok: false, error: "서버 연결 오류입니다." };
+    // [DEBUG] 임시: 실제 예외 메시지를 사용자에게 노출
+    const msg = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+    return { ok: false, error: `[DEBUG catch] ${msg}` };
   }
 }
 
