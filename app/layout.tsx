@@ -4,8 +4,8 @@ import { SocialSidebar } from "@/components/SocialSidebar";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://osanvoice.xn--oo5bn6ap0x.kr"),
-  title: "오산의 목소리 — 시민이 만드는 당당한 오산",
-  description: "오산의 변화와 미래를 위해 시민의 목소리를 듣습니다.",
+  title: "오산의 목소리",
+  description: "오산의 변화와 미래를 위해 시민의 목소리를 듣겠습니다.",
   manifest: "/manifest.webmanifest",
   icons: {
     icon: "/icon.svg",
@@ -18,15 +18,26 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "오산의 목소리",
-    description: "오산의 변화와 미래를 위해 시민의 목소리를 듣습니다.",
+    description: "오산의 변화와 미래를 위해 시민의 목소리를 듣겠습니다.",
     type: "website",
     locale: "ko_KR",
     siteName: "오산의 목소리",
+    url: "https://osanvoice.xn--oo5bn6ap0x.kr",
+    images: [
+      {
+        url: "/og-thumb.jpg",
+        width: 1200,
+        height: 607,
+        alt: "오산시장 후보 기호 1번 조용호 — 진정한 변화, 당당한 오산",
+        type: "image/jpeg",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "오산의 목소리",
-    description: "오산의 변화와 미래를 위해 시민의 목소리를 듣습니다.",
+    description: "오산의 변화와 미래를 위해 시민의 목소리를 듣겠습니다.",
+    images: ["/og-thumb.jpg"],
   },
 };
 
