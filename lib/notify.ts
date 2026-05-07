@@ -39,7 +39,7 @@ export async function notifyNewVoice(p: NewVoiceParams): Promise<void> {
     p.content.length > 280 ? p.content.slice(0, 280) + "…" : p.content;
 
   const lines = [
-    "🆕 <b>새 의견이 등록됐어요</b>",
+    "🆕 <b>새 의견 — 공개 승인 필요</b>",
     "",
     `📍 ${escapeHtml(dongName)} · ${escapeHtml(catLabel)}`,
     profile ? `👤 ${escapeHtml(profile)}` : null,
@@ -47,7 +47,7 @@ export async function notifyNewVoice(p: NewVoiceParams): Promise<void> {
     "",
     escapeHtml(snippet),
     "",
-    `🔗 ${SITE.url}/admin`,
+    `🔗 ${SITE.url}/admin?show=all → '공개' 버튼 클릭`,
   ].filter(Boolean) as string[];
 
   try {

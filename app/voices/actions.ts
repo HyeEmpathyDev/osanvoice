@@ -116,7 +116,8 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
       return { ok: false, error: "이미 동일한 의견이 등록됐습니다." };
     }
 
-    // 신규 의견은 즉시 공개. 부적절 콘텐츠는 관리자 페이지에서 사후 숨김 처리.
+    // 사전 모더레이션: 신규 의견은 비공개로 들어가고 운영진 검토 후 공개.
+    // 텔레그램 알림 받은 운영자가 /admin에서 '공개' 버튼 누르면 노출됨.
     const { data, error } = await supabase
       .from("voices")
       .insert({
@@ -125,7 +126,7 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
         content,
         age_group: ageGroup,
         gender,
-        is_visible: true,
+        is_visible: false,
       })
       .select("id")
       .single();
