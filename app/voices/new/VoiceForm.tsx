@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { DONGS, CATEGORIES, AGE_GROUPS } from "@/lib/constants";
+import { LEGAL_DONGS, CATEGORIES, AGE_GROUPS } from "@/lib/constants";
 import { submitVoice } from "../actions";
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
@@ -79,21 +79,24 @@ export default function VoiceForm() {
         className="absolute -left-[9999px] opacity-0 pointer-events-none"
       />
 
-      {/* 행정동 */}
+      {/* 법정동 — 24개 중 본인이 사는 동네 선택 */}
       <div>
         <label className="block text-sm font-bold text-[#0f1a2e] mb-2">
           어느 동에 사시나요? <span className="text-red-500">*</span>
         </label>
-        <div className="grid grid-cols-4 gap-2">
-          {DONGS.map((d) => (
+        <p className="text-xs text-gray-500 mb-3">
+          본인이 사는 법정동(동네 이름)을 선택해주세요.
+        </p>
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          {LEGAL_DONGS.map((d) => (
             <label
-              key={d.id}
+              key={d.name}
               className="cursor-pointer text-center border-2 border-gray-200 rounded-lg py-3 text-sm font-bold has-[:checked]:bg-[#003b8e] has-[:checked]:text-white has-[:checked]:border-[#003b8e] hover:border-[#003b8e] transition"
             >
               <input
                 type="radio"
                 name="dong"
-                value={d.id}
+                value={d.admin}
                 required
                 className="sr-only"
               />
