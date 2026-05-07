@@ -6,6 +6,7 @@ import { Footer } from "@/components/Footer";
 import { FadeIn } from "@/components/FadeIn";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { ProgressBar } from "@/components/ProgressBar";
+import { DDay } from "@/components/DDay";
 import { LikeButton } from "@/components/LikeButton";
 import { ArrowRight, MessageSquarePlus, Sparkles, Flame } from "lucide-react";
 import type { Voice } from "@/lib/types";
@@ -65,8 +66,13 @@ export default async function Home() {
     <main className="min-h-screen bg-white text-[#0a0e1a]">
       <Header />
 
-      {/* 헤더 하단 진행 바 */}
-      <ProgressBar count={total} goal={Math.max(100, Math.ceil(total / 100) * 100)} />
+      {/* 헤더 하단 — 모바일은 D-Day, 데스크톱은 진행 바 */}
+      <div className="md:hidden bg-gradient-to-r from-white to-amber-50 border-y border-amber-100 py-3 px-6">
+        <DDay />
+      </div>
+      <div className="hidden md:block">
+        <ProgressBar count={total} goal={Math.max(100, Math.ceil(total / 100) * 100)} />
+      </div>
 
       {/* 히어로 */}
       <section className="bg-mesh-hero text-white relative overflow-hidden noise">
