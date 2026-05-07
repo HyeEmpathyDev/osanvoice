@@ -5,6 +5,13 @@ applications:
         preBuild:
           commands:
             - npm ci --cache .npm --prefer-offline
+            # Amplify 콘솔의 서버 전용 env vars(NEXT_PUBLIC_ 미접두)는 SSR 런타임에
+            # 자동으로 주입되지 않는다. 빌드 시 .env.production에 굽어 런타임에 노출.
+            - echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> .env.production
+            - echo "ADMIN_SECRET_TOKEN=$ADMIN_SECRET_TOKEN" >> .env.production
+            - echo "TURNSTILE_SECRET_KEY=$TURNSTILE_SECRET_KEY" >> .env.production
+            - echo "TELEGRAM_IDEA_BOT_TOKEN=$TELEGRAM_IDEA_BOT_TOKEN" >> .env.production
+            - echo "TELEGRAM_OWNER_ID=$TELEGRAM_OWNER_ID" >> .env.production
         build:
           commands:
             - npm run build

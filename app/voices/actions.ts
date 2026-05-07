@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
-import { getSupabase } from "@/lib/supabase";
+import { getSupabase, getAdminSupabase } from "@/lib/supabase";
 import { DONGS, CATEGORIES, AGE_GROUPS } from "@/lib/constants";
 import { isUuid } from "@/lib/validation";
 import { notifyNewVoice } from "@/lib/notify";
@@ -100,9 +100,9 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
     ? genderRaw
     : null;
 
-  // 5. 인서트
+  // 5. 인서트 (service role 키로 RLS 우회 — amplify.yml에서 .env.production 굽기)
   try {
-    const supabase = getSupabase();
+    const supabase = getAdminSupabase();
 
     // 동일 콘텐츠 중복 제출 차단 (5분 내)
     const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
@@ -116,8 +116,7 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
       return { ok: false, error: "이미 동일한 의견이 등록됐습니다." };
     }
 
-    // 신규 의견은 일단 비공개로 들어간다 (RLS 정책 호환).
-    // 텔레그램 알림 받은 운영자가 /admin에서 즉시 공개 토글하면 노출.
+    // 신규 의견은 즉시 공개. 부적절 콘텐츠는 관리자 페이지에서 사후 숨김 처리.
     const { data, error } = await supabase
       .from("voices")
       .insert({
@@ -126,7 +125,7 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
         content,
         age_group: ageGroup,
         gender,
-        is_visible: false,
+        is_visible: true,
       })
       .select("id")
       .single();
