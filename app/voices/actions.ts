@@ -3,11 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { getSupabase, getAdminSupabase } from "@/lib/supabase";
-import { DONGS, CATEGORIES, AGE_GROUPS } from "@/lib/constants";
+import { CATEGORIES, AGE_GROUPS, LEGAL_DONGS } from "@/lib/constants";
 import { isUuid } from "@/lib/validation";
 import { notifyNewVoice } from "@/lib/notify";
 
-const VALID_DONGS = DONGS.map((d) => d.id);
 const VALID_CATEGORIES = CATEGORIES.map((c) => c.key);
 const VALID_AGE_GROUPS = [...AGE_GROUPS];
 const VALID_GENDERS = ["m", "f"] as const;
@@ -69,16 +68,18 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
     return { ok: false, error: "보안 검증에 실패했습니다. 새로고침 후 다시 시도해주세요." };
   }
 
-  // 4. 입력 검증
-  const dong = String(formData.get("dong") ?? "");
+  // 4. 입력 검증 — 법정동 이름을 받아 행정동 id로 매핑
+  const legalDong = String(formData.get("legal_dong") ?? "");
   const category = String(formData.get("category") ?? "");
   const content = String(formData.get("content") ?? "").trim();
   const ageRaw = String(formData.get("age_group") ?? "");
   const genderRaw = String(formData.get("gender") ?? "");
 
-  if (!VALID_DONGS.includes(dong as (typeof VALID_DONGS)[number])) {
-    return { ok: false, error: "행정동을 선택해주세요." };
+  const legalMatch = LEGAL_DONGS.find((l) => l.name === legalDong);
+  if (!legalMatch) {
+    return { ok: false, error: "법정동을 선택해주세요." };
   }
+  const dong = legalMatch.admin;
   if (!VALID_CATEGORIES.includes(category as (typeof VALID_CATEGORIES)[number])) {
     return { ok: false, error: "분야를 선택해주세요." };
   }
@@ -122,6 +123,7 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
       .from("voices")
       .insert({
         dong,
+        legal_dong: legalDong,
         category,
         content,
         age_group: ageGroup,
@@ -140,6 +142,7 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
     await notifyNewVoice({
       id: data!.id,
       dong,
+      legalDong,
       category,
       content,
       ageGroup,

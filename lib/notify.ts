@@ -12,6 +12,7 @@ function escapeHtml(s: string): string {
 interface NewVoiceParams {
   id: string;
   dong: string;
+  legalDong?: string;
   category: string;
   content: string;
   ageGroup: string | null;
@@ -26,6 +27,9 @@ export async function notifyNewVoice(p: NewVoiceParams): Promise<void> {
   if (!token || !chatId) return;
 
   const dongName = dongMap[p.dong] ?? p.dong;
+  const dongLabel = p.legalDong
+    ? `${p.legalDong} (${dongName})`
+    : dongName;
   const cat = catMap[p.category];
   const catLabel = cat ? `${cat.emoji} ${cat.name}` : p.category;
   const profile = [

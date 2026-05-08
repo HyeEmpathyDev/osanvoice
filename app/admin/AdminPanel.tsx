@@ -2,13 +2,14 @@
 
 import { useTransition } from "react";
 import { Eye, EyeOff, Trash2 } from "lucide-react";
-import { toggleVisibility, deleteVoice } from "./actions";
+import { toggleVisibility, deleteVoice, reassignDong } from "./actions";
 import { DONGS, CATEGORIES } from "@/lib/constants";
 
 interface Voice {
   id: string;
   created_at: string;
   dong: string;
+  legal_dong: string | null;
   category: string;
   content: string;
   age_group: string | null;
@@ -42,6 +43,15 @@ export function AdminPanel({ voices }: { voices: Voice[] }) {
     });
   }
 
+  function onReassign(id: string, newDong: string) {
+    const fd = new FormData();
+    fd.append("id", id);
+    fd.append("dong", newDong);
+    startTransition(async () => {
+      await reassignDong(fd);
+    });
+  }
+
   if (voices.length === 0) {
     return (
       <div className="text-center text-gray-500 py-20 border-2 border-dashed border-gray-200 rounded-xl">
@@ -64,6 +74,11 @@ export function AdminPanel({ voices }: { voices: Voice[] }) {
             }`}
           >
             <div className="flex flex-wrap items-center gap-2 mb-3 text-xs font-bold">
+              {v.legal_dong && (
+                <span className="bg-gray-800 text-white px-2.5 py-1 rounded-full">
+                  📍 {v.legal_dong}
+                </span>
+              )}
               <span className="bg-[#003b8e] text-white px-2.5 py-1 rounded-full">
                 {dongMap[v.dong] ?? v.dong}
               </span>
@@ -88,7 +103,7 @@ export function AdminPanel({ voices }: { voices: Voice[] }) {
             <p className="text-sm leading-relaxed text-gray-800 whitespace-pre-wrap mb-4">
               {v.content}
             </p>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2 items-center">
               <button
                 onClick={() => onToggle(v.id, v.is_visible)}
                 disabled={pending}
@@ -105,7 +120,22 @@ export function AdminPanel({ voices }: { voices: Voice[] }) {
                 <Trash2 size={14} />
                 삭제
               </button>
-              <code className="ml-auto text-[10px] text-gray-400">
+              <label className="text-xs font-bold flex items-center gap-1.5 ml-auto">
+                <span className="text-gray-500">행정동 변경:</span>
+                <select
+                  value={v.dong}
+                  disabled={pending}
+                  onChange={(e) => onReassign(v.id, e.target.value)}
+                  className="text-xs font-bold border-2 border-gray-200 rounded-lg px-2 py-1.5 hover:border-[#003b8e] focus:border-[#003b8e] outline-none disabled:opacity-50"
+                >
+                  {DONGS.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <code className="text-[10px] text-gray-400">
                 {v.id.slice(0, 8)}…
               </code>
             </div>

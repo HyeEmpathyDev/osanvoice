@@ -79,7 +79,7 @@ export default function VoiceForm() {
         className="absolute -left-[9999px] opacity-0 pointer-events-none"
       />
 
-      {/* 법정동 — 24개 중 본인이 사는 동네 선택 */}
+      {/* 법정동 — 24개 중 본인이 사는 동네 선택. 서버에서 행정동으로 자동 매핑 */}
       <div>
         <label className="block text-sm font-bold text-[#0f1a2e] mb-2">
           어느 동에 사시나요? <span className="text-red-500">*</span>
@@ -95,8 +95,8 @@ export default function VoiceForm() {
             >
               <input
                 type="radio"
-                name="dong"
-                value={d.admin}
+                name="legal_dong"
+                value={d.name}
                 required
                 className="sr-only"
               />

@@ -5,6 +5,9 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
 import { isUuid } from "@/lib/validation";
+import { DONGS } from "@/lib/constants";
+
+const VALID_DONG_IDS = DONGS.map((d) => d.id) as readonly string[];
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -80,6 +83,32 @@ export async function toggleVisibility(formData: FormData) {
     return { ok: true };
   } catch (e) {
     console.error("[toggleVisibility] exception:", e);
+    return { ok: false, error: "서버 오류" };
+  }
+}
+
+export async function reassignDong(formData: FormData) {
+  if (!(await isAuthed())) return { ok: false, error: "권한이 없습니다." };
+  const id = String(formData.get("id") ?? "");
+  const dong = String(formData.get("dong") ?? "");
+  if (!isUuid(id)) return { ok: false, error: "잘못된 id입니다." };
+  if (!VALID_DONG_IDS.includes(dong)) {
+    return { ok: false, error: "잘못된 행정동입니다." };
+  }
+  try {
+    const supabase = adminClient();
+    const { error } = await supabase
+      .from("voices")
+      .update({ dong })
+      .eq("id", id);
+    if (error) {
+      console.error("[reassignDong]", error);
+      return { ok: false, error: "처리 중 오류가 발생했습니다." };
+    }
+    revalidateAll();
+    return { ok: true };
+  } catch (e) {
+    console.error("[reassignDong] exception:", e);
     return { ok: false, error: "서버 오류" };
   }
 }

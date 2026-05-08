@@ -9,6 +9,7 @@ export interface Voice {
   id: string;
   created_at: string;
   dong: DongId;
+  legal_dong: string | null;
   category: CategoryKey;
   content: string;
   age_group: AgeGroup | null;
