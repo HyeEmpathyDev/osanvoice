@@ -82,7 +82,7 @@ export default async function Home() {
           <FadeIn>
             <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest mb-7 backdrop-blur">
               <Sparkles size={14} className="text-[#ffd54a]" />
-              OSAN VOICE · 2026
+              Voice of OSAN 2026
             </div>
           </FadeIn>
           <FadeIn delay={0.1}>
