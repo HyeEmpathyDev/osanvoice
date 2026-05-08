@@ -16,42 +16,41 @@ export const OSAN_CENTER = { lat: 37.1525, lng: 127.0775 } as const;
 
 export type DongId = (typeof DONGS)[number]["id"];
 
-// 24개 법정동 — 시민이 폼에서 선택하는 단위.
+// 오산시 법정동 → 행정동 매핑 (사용자 확정).
 // admin 필드는 대응되는 행정동 id (DONGS의 id와 매칭).
-// ※ 매핑이 부정확하면 알려주세요. (2024.1 분동 후 기준)
+// 일부 법정동은 두 행정동에 걸쳐있음(원동·고현동) — 폼에선 한 번만 표시.
 export const LEGAL_DONGS = [
   // 중앙동
   { name: "오산동",   admin: "jungang"  },
   { name: "부산동",   admin: "jungang"  },
-  { name: "원동",     admin: "jungang"  },
-  { name: "궐동",     admin: "jungang"  },
+  // 남촌동
+  { name: "가장동",   admin: "namchon"  },
+  { name: "궐동",     admin: "namchon"  },
+  { name: "청학동",   admin: "namchon"  },
   // 대원1동
-  { name: "청학동",   admin: "daewon1"  },
+  { name: "갈곶동",   admin: "daewon1"  },
+  { name: "고현동",   admin: "daewon1"  }, // 일부 대원2동에도 걸침
+  { name: "원동",     admin: "daewon1"  }, // 일부 대원2동에도 걸침
   // 대원2동
-  { name: "가장동",   admin: "daewon2"  },
-  { name: "누읍동",   admin: "daewon2"  },
-  { name: "가수동",   admin: "daewon2"  },
-  // 신장1동
-  { name: "외삼미동", admin: "sinjang1" },
-  { name: "내삼미동", admin: "sinjang1" },
-  // 신장2동
-  { name: "양산동",   admin: "sinjang2" },
-  { name: "세교동",   admin: "sinjang2" },
-  { name: "지곶동",   admin: "sinjang2" },
+  { name: "천호동",   admin: "daewon2"  },
   // 세마동
   { name: "서랑동",   admin: "sema"     },
-  { name: "서동",     admin: "sema"     },
-  { name: "벌음동",   admin: "sema"     },
-  { name: "두곡동",   admin: "sema"     },
-  { name: "탑동",     admin: "sema"     },
-  // 남촌동
-  { name: "갈곶동",   admin: "namchon"  },
-  { name: "금암동",   admin: "namchon"  },
-  { name: "수청동",   admin: "namchon"  },
+  { name: "양산동",   admin: "sema"     },
+  { name: "지곶동",   admin: "sema"     },
+  { name: "세교동",   admin: "sema"     },
+  { name: "외삼미동", admin: "sema"     },
   // 초평동
-  { name: "은계동",   admin: "chopyeong"},
-  { name: "청호동",   admin: "chopyeong"},
-  { name: "고현동",   admin: "chopyeong"},
+  { name: "서동",     admin: "chopyeong"},
+  { name: "가수동",   admin: "chopyeong"},
+  { name: "벌음동",   admin: "chopyeong"},
+  { name: "탑동",     admin: "chopyeong"},
+  { name: "두곡동",   admin: "chopyeong"},
+  // 신장1동
+  { name: "금암동",   admin: "sinjang1" },
+  { name: "수청동",   admin: "sinjang1" },
+  // 신장2동
+  { name: "내삼미동", admin: "sinjang2" },
+  { name: "은계동",   admin: "sinjang2" },
 ] as const;
 
 // 의견 분야 (시민이 의견 분류용 9개 카테고리)
