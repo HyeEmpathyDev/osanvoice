@@ -1,14 +1,22 @@
 // 오산시 8개 행정동 (2026년 기준, 2024.1 분동 반영)
-// lat/lng는 각 행정복지센터 인근 대략값 — 지도 마커용
+// lat/lng는 각 행정복지센터 주소 기반 추정값 (정밀 검증 필요).
+// - 중앙동:    경기대로 307
+// - 남촌동:    청학로 80
+// - 대원1동:   오산로132번길 28
+// - 대원2동:   동부대로 332-13 가동
+// - 신장1동:   문헌공로 45
+// - 신장2동:   내삼미로79번길 48
+// - 세마동:    독산성로 419
+// - 초평동:    초평중앙로 77
 export const DONGS = [
-  { id: "jungang",   name: "중앙동",   short: "중앙",   lat: 37.1497, lng: 127.0775 },
-  { id: "daewon1",   name: "대원1동",  short: "대원1",  lat: 37.1378, lng: 127.0712 },
-  { id: "daewon2",   name: "대원2동",  short: "대원2",  lat: 37.1437, lng: 127.0625 },
-  { id: "sinjang1",  name: "신장1동",  short: "신장1",  lat: 37.1632, lng: 127.0925 },
-  { id: "sinjang2",  name: "신장2동",  short: "신장2",  lat: 37.1545, lng: 127.1058 },
-  { id: "sema",      name: "세마동",   short: "세마",   lat: 37.1843, lng: 127.0581 },
-  { id: "namchon",   name: "남촌동",   short: "남촌",   lat: 37.1395, lng: 127.0882 },
-  { id: "chopyeong", name: "초평동",   short: "초평",   lat: 37.1547, lng: 127.0625 },
+  { id: "jungang",   name: "중앙동",   short: "중앙",   lat: 37.1505, lng: 127.0775 },
+  { id: "daewon1",   name: "대원1동",  short: "대원1",  lat: 37.1430, lng: 127.0695 },
+  { id: "daewon2",   name: "대원2동",  short: "대원2",  lat: 37.1440, lng: 127.0900 },
+  { id: "sinjang1",  name: "신장1동",  short: "신장1",  lat: 37.1580, lng: 127.0820 },
+  { id: "sinjang2",  name: "신장2동",  short: "신장2",  lat: 37.1545, lng: 127.1050 },
+  { id: "sema",      name: "세마동",   short: "세마",   lat: 37.1820, lng: 127.0620 },
+  { id: "namchon",   name: "남촌동",   short: "남촌",   lat: 37.1370, lng: 127.0820 },
+  { id: "chopyeong", name: "초평동",   short: "초평",   lat: 37.1583, lng: 127.0420 },
 ] as const;
 
 // 오산시 중심 (지도 초기 중심점)
