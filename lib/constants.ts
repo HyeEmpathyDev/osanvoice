@@ -45,6 +45,7 @@ export const LEGAL_DONGS = [
   { name: "벌음동",   admin: "chopyeong"},
   { name: "탑동",     admin: "chopyeong"},
   { name: "두곡동",   admin: "chopyeong"},
+  { name: "누읍동",   admin: "chopyeong"},
   // 신장1동
   { name: "금암동",   admin: "sinjang1" },
   { name: "수청동",   admin: "sinjang1" },
