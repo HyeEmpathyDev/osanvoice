@@ -13,7 +13,7 @@ export const metadata = {
   description: "오산 시민이 보낸 정책 의견을 한곳에서 보세요.",
 };
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 function formatRelative(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();

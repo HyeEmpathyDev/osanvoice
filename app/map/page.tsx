@@ -12,7 +12,7 @@ export const metadata = {
   description: "오산 8개 행정동별 시민 의견을 한눈에.",
 };
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 async function fetchDongCounts(): Promise<Record<string, number>> {
   const counts: Record<string, number> = Object.fromEntries(

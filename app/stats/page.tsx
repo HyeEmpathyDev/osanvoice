@@ -10,7 +10,7 @@ import { getSupabase } from "@/lib/supabase";
 import { extractKeywords, buildDailySeries } from "@/lib/keywords";
 import { BarChart3, TrendingUp, Hash } from "lucide-react";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "참여현황 — 오산의 목소리",
   description: "행정동별·카테고리별 시민 의견 통계.",

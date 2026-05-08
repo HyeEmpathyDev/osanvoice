@@ -11,7 +11,9 @@ import { LikeButton } from "@/components/LikeButton";
 import { ArrowRight, MessageSquarePlus, Sparkles, Flame } from "lucide-react";
 import type { Voice } from "@/lib/types";
 
-export const revalidate = 60;
+// 카운트가 시민에게 즉시 반영되어야 하므로 매 요청마다 fresh.
+// (캐시되면 의견 새로 등록·공개 처리해도 메인 화면 숫자가 안 바뀐다)
+export const dynamic = "force-dynamic";
 
 async function getStats() {
   try {
