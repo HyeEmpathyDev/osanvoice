@@ -32,7 +32,7 @@ export const LEGAL_DONGS = [
   { name: "고현동",   admin: "daewon1"  }, // 일부 대원2동에도 걸침
   { name: "원동",     admin: "daewon1"  }, // 일부 대원2동에도 걸침
   // 대원2동
-  { name: "천호동",   admin: "daewon2"  },
+  { name: "청호동",   admin: "daewon2"  },
   // 세마동
   { name: "서랑동",   admin: "sema"     },
   { name: "양산동",   admin: "sema"     },
