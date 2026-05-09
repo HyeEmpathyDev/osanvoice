@@ -14,6 +14,7 @@ export interface Voice {
   content: string;
   age_group: AgeGroup | null;
   gender: Gender | null;
+  ip: string | null;
   is_visible: boolean;
   like_count: number;
 }

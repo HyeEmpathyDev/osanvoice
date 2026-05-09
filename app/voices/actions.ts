@@ -128,6 +128,7 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
         content,
         age_group: ageGroup,
         gender,
+        ip,
         is_visible: false,
       })
       .select("id")

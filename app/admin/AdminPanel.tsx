@@ -14,6 +14,7 @@ interface Voice {
   content: string;
   age_group: string | null;
   gender: string | null;
+  ip: string | null;
   is_visible: boolean;
 }
 
@@ -24,6 +25,15 @@ const catMap = Object.fromEntries(
 
 export function AdminPanel({ voices }: { voices: Voice[] }) {
   const [pending, startTransition] = useTransition();
+
+  // 어뷰즈 검증: IP별, 내용별 카운트 사전 계산
+  const ipCounts = new Map<string, number>();
+  const contentCounts = new Map<string, number>();
+  voices.forEach((v) => {
+    if (v.ip) ipCounts.set(v.ip, (ipCounts.get(v.ip) ?? 0) + 1);
+    const key = v.content.replace(/\s+/g, "");
+    contentCounts.set(key, (contentCounts.get(key) ?? 0) + 1);
+  });
 
   function onToggle(id: string, currentVisible: boolean) {
     const fd = new FormData();
@@ -64,6 +74,9 @@ export function AdminPanel({ voices }: { voices: Voice[] }) {
     <ul className="space-y-3">
       {voices.map((v) => {
         const cat = catMap[v.category];
+        const sameIpCount = v.ip ? (ipCounts.get(v.ip) ?? 0) : 0;
+        const sameContentCount =
+          contentCounts.get(v.content.replace(/\s+/g, "")) ?? 0;
         return (
           <li
             key={v.id}
@@ -100,6 +113,26 @@ export function AdminPanel({ voices }: { voices: Voice[] }) {
                 {new Date(v.created_at).toLocaleString("ko-KR")}
               </span>
             </div>
+            {/* 어뷰즈 검증 정보 — admin 전용 */}
+            {(v.ip || sameContentCount > 1) && (
+              <div className="flex flex-wrap items-center gap-2 mb-3 text-[11px]">
+                {v.ip && (
+                  <span className="font-mono bg-gray-100 text-gray-700 px-2 py-0.5 rounded">
+                    IP {v.ip}
+                  </span>
+                )}
+                {sameIpCount > 1 && (
+                  <span className="bg-orange-100 text-orange-800 px-2 py-0.5 rounded font-bold">
+                    🔁 같은 IP {sameIpCount}건
+                  </span>
+                )}
+                {sameContentCount > 1 && (
+                  <span className="bg-red-100 text-red-800 px-2 py-0.5 rounded font-bold">
+                    ⚠️ 같은 내용 {sameContentCount}건
+                  </span>
+                )}
+              </div>
+            )}
             <p className="text-sm leading-relaxed text-gray-800 whitespace-pre-wrap mb-4">
               {v.content}
             </p>
