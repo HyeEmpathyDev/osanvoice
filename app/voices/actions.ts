@@ -105,7 +105,20 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
   try {
     const supabase = getAdminSupabase();
 
-    // 동일 콘텐츠 중복 제출 차단 (5분 내)
+    // 동일 IP + 동일 내용 — 같은 사람의 재제출로 판단 (전체 기간)
+    if (ip && ip !== "unknown") {
+      const { data: ipDups } = await supabase
+        .from("voices")
+        .select("id")
+        .eq("content", content)
+        .eq("ip", ip)
+        .limit(1);
+      if (ipDups && ipDups.length > 0) {
+        return { ok: false, error: "이미 의견을 제출하셨습니다." };
+      }
+    }
+
+    // 동일 내용 다중 제출 차단 (5분 내, IP 무관) — 봇/연속 클릭 방어
     const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
     const { data: dups } = await supabase
       .from("voices")
