@@ -11,6 +11,11 @@ const VALID_CATEGORIES = CATEGORIES.map((c) => c.key);
 const VALID_AGE_GROUPS = [...AGE_GROUPS];
 const VALID_GENDERS = ["m", "f"] as const;
 
+const BLOCKED_IPS = new Set<string>([
+  "112.217.206.82",
+  "2001:4430:c133:6ff7:35eb:dee7:2c23:dda0",
+]);
+
 const TURNSTILE_SECRET = process.env.TURNSTILE_SECRET_KEY;
 const TURNSTILE_VERIFY_URL =
   "https://challenges.cloudflare.com/turnstile/v0/siteverify";
@@ -46,6 +51,11 @@ export async function submitVoice(formData: FormData): Promise<SubmitResult> {
     h.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     h.get("x-real-ip") ??
     "unknown";
+
+  // 0-1. 차단 IP — 이미 제출한 적 있는 사람의 추가 제출 차단
+  if (BLOCKED_IPS.has(ip.toLowerCase())) {
+    return { ok: false, error: "이미 의견을 제출하셨습니다." };
+  }
 
   // 1. Honeypot — 봇이 자동 채우는 숨겨진 필드
   const honeypot = String(formData.get("website") ?? "");
